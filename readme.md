@@ -1,8 +1,9 @@
 # CloudflareWarpGUI
 There are two versions of GUI in this repo
 1. `old_app.py` uses the old tkinter that comes built in with python, to run this you don't need anything else other than python.
+![preview of old_app.py using builtin Tkinter](/images/tkinter.png "old_app.py")
 2. `app.py` uses the customTkinter which is a module based on tkinter but looks far better.
-
+![preview of app.py using builtin customTkinter](/images/customTkinter.png "app.py")
 If you wish to use the `launcher.sh` script please make sure it's pointing to the correct script you wish to run
 
 ### As a Linux user you're probably thinking "why does this exist?"
