@@ -1,42 +1,46 @@
-from tkinter import Tk, Label, Button
-from tkinter import StringVar
+import customtkinter as tk
+from customtkinter import StringVar
 from threading import Thread
 from os import popen
 from time import sleep
 
-root = Tk()
-root.title("Cloudflare WARP")
-root.geometry("470x200")
-status = StringVar()
-enableLabel = Label(root, text="Enable Cloudflare WARP", width=50).grid(row=1, column=1)
-disableLabel = Label(root, text="Disable Cloudflare WARP", width=50).grid(row=2, column=1)
-statusLabel = Label(root, textvariable=status, width=50).grid(row=3, column=1, columnspan=2)
+tk.set_appearance_mode("dark")
+tk.set_default_color_theme("dark-blue")
+class App(tk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.status = StringVar()
+        self.title("Cloudflare WARP")
+        self.geometry("470x200")
+        tk.CTkLabel(master=self, text="Enable Cloudflare WARP", width=375).grid(row=1, column=1, pady=10)
+        tk.CTkLabel(master=self, text="Disable Cloudflare WARP", width=375).grid(row=2, column=1)
+        tk.CTkLabel(master=self, textvariable=self.status, width=50,font=("Arial", 10)).grid(row=3, column=1,columnspan=2, pady=100)
+        tk.CTkButton(master=self, text="Enable", command=lambda: Thread(target=self.enableCallback).start(), width=75).grid(row=1, column=2)
+        tk.CTkButton(master=self, text="Disable", command=lambda: Thread(target=self.disableCallback).start(), width=75, ).grid(row=2, column=2, padx=5)
+        self.statusCheck()
+    def enableCallback(self):
+        popen("warp-cli connect").read()
+        self.statusCheck()
+        return True
 
-def enableCallback():
-    popen("warp-cli connect").read()
-    statusCheck()
-    return True
+    def disableCallback(self):
+        popen("warp-cli disconnect").read()
+        self.statusCheck()
+        return True
 
-def disableCallback():
-    popen("warp-cli disconnect").read()
-    statusCheck()
-    return True
-
-def statusCheck():
-    command= popen("warp-cli status").read()
-    for i in command.split("\n"):
-        if len(i) > 7:
-            print(i)
-            break
-    status.set(i)
-    if "Connecting" in i:
-        sleep(1)
-        statusCheck()
+    def statusCheck(self):
+        command= popen("warp-cli status").read()
+        for i in command.split("\n"):
+            if len(i) > 7:
+                print(i)
+                break
+        self.status.set(i)
+        if "Connecting" in i:
+            sleep(1)
+            self.statusCheck()
+        
+        return True
     
-    return True
-
-Button(root, text="Enable", command=lambda: Thread(target=enableCallback).start(), width=10).grid(row=1, column=2)
-Button(root, text="Disable", command=lambda: Thread(target=disableCallback).start(), width=10).grid(row=2, column=2)
-
-statusCheck()
-root.mainloop()
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
