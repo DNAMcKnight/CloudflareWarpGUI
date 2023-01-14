@@ -11,11 +11,13 @@ class App(tk.CTk):
     def __init__(self):
         super().__init__()
         self.status = StringVar()
+        self.taskbarText = StringVar()
+        self.taskbarCheck = None
         self.title("Cloudflare WARP")
         self.geometry("470x200")
+        self.taskbar()
         self.dependencyCheck()
         self.statusCheck()
-        
     def dependencyCheck(self):
         check = True
         # check if user is using linux
@@ -40,11 +42,11 @@ class App(tk.CTk):
     def menu(self):
         tk.CTkLabel(master=self, text="Enable Cloudflare WARP", width=375).grid(row=1, column=1, pady=10)
         tk.CTkLabel(master=self, text="Disable Cloudflare WARP", width=375).grid(row=2, column=1)
-        tk.CTkLabel(master=self, textvariable=self.status, width=50,font=("Arial", 10)).grid(row=3, column=1,columnspan=2, pady=100)
+        tk.CTkCheckBox(master=self, textvariable=self.taskbarText,command=lambda: Thread(target=self.taskbar).start()).grid(row=3, column=1,columnspan=2,pady=5)
+        tk.CTkLabel(master=self, textvariable=self.status, width=50,font=("Arial", 10)).grid(row=4, column=1,columnspan=2, pady=60)
         tk.CTkButton(master=self, text="Enable", command=lambda: Thread(target=self.enableCallback).start(), width=75).grid(row=1, column=2)
         tk.CTkButton(master=self, text="Disable", command=lambda: Thread(target=self.disableCallback).start(), width=75, ).grid(row=2, column=2, padx=5)
-    
-    # connect callback, it runs status check to update until connection status changes to connected
+    # connect callback, it runs status check to update until connection status changes to connected    
     def enableCallback(self):
         popen("warp-cli connect").read()
         self.statusCheck()
@@ -54,7 +56,18 @@ class App(tk.CTk):
         popen("warp-cli disconnect").read()
         self.statusCheck()
         return True
-
+    
+    def taskbar(self):
+        if self.taskbarCheck == False:
+            self.taskbarText.set("Disable warp taskbar icon")
+            self.taskbarCheck = True
+            popen("warp-taskbar").read()
+        else:
+            self.taskbarText.set("Enable warp taskbar icon")
+            self.taskbarCheck = False
+            popen("pkill -f warp-taskbar").read()
+            
+            
     def statusCheck(self):
         command= popen("warp-cli status").read()
         for i in command.split("\n"):
