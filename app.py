@@ -80,7 +80,12 @@ class App(tk.CTk):
             self.statusCheck()
         
         return True
+    def on_exit(self):
+        popen("warp-cli disconnect").read()
+        popen("pkill -f warp-taskbar").read()
+        sys.exit()
     
 if __name__ == "__main__":
     app = App()
+    app.protocol("WM_DELETE_WINDOW", app.on_exit)
     app.mainloop()
