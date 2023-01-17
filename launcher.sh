@@ -5,4 +5,4 @@ path = "/"
 
 cd path
 
-python app.py
+python main.py
