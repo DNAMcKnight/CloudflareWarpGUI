@@ -13,15 +13,12 @@ root.geometry("470x200")
 white = PhotoImage(file=f"{getcwd()}/images/white.png")
 orange = PhotoImage(file=f"{getcwd()}/images/orange.png")
 root.iconphoto(True, white)
-status = StringVar()
+status= StringVar()
+taskbarText = StringVar()
+taskbarCheck = None
+
 enableLabel = Label(root, text="Enable Cloudflare WARP").grid(row=0, column=0, padx=90, pady=5)
-Button(root, text="Enable", command=lambda: Thread(target=enableCallback).start(), width=10).grid(row=0, column=1,padx=5, pady=5)
-
 disableLabel = Label(root, text="Disable Cloudflare WARP").grid(row=1, column=0,padx=5, pady=5)
-Button(root, text="Disable", command=lambda: Thread(target=disableCallback).start(), width=10).grid(row=1, column=1,padx=5, pady=5)
-
-checkButton = Checkbutton(root, text="Enable WARP toolbar icon").grid(row=2,columnspan=2, pady=5)
-
 statusLabel = Label(root, textvariable=status, width=50).grid(row=3,columnspan=2, pady=60)
 def introMessage():
     with open("settings.json", "r") as f:
@@ -59,7 +56,20 @@ def disableCallback():
     root.iconphoto(True, white)
     return True
 
+def taskbar():
+    global taskbarCheck
+    print(taskbarCheck)
+    if taskbarCheck == False:
+        taskbarText.set("Disable warp taskbar icon")
+        taskbarCheck = True
+        popen("warp-taskbar").read()
+    else:
+        taskbarText.set("Enable warp taskbar icon")
+        taskbarCheck = False
+        popen("pkill -f warp-taskbar").read()
+
 def statusCheck():
+    taskbar()
     command= popen("warp-cli status").read()
     for i in command.split("\n"):
         if len(i) > 7:
@@ -75,8 +85,13 @@ def statusCheck():
 
 def on_exit():
     popen("warp-cli disconnect").read()
+    popen("pkill -f warp-taskbar").read()
     root.quit()
     
+
+Button(root, text="Enable", command=lambda: Thread(target=enableCallback).start(), width=10).grid(row=0, column=1,padx=5, pady=5)
+Button(root, text="Disable", command=lambda: Thread(target=disableCallback).start(), width=10).grid(row=1, column=1,padx=5, pady=5)
+checkButton = Checkbutton(root, textvariable=taskbarText,command=lambda: Thread(target=taskbar).start()).grid(row=2,columnspan=2, pady=5)
 
 
 
