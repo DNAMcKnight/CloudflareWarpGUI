@@ -10,12 +10,17 @@ root = Tk()
 rootMenu = Menu(root)
 root.title("Cloudflare WARP")
 root.geometry("470x200")
-# root.configure(bg="#000000")
+root.configure(bg="#1E1E1E")
 root.resizable(False, False)
-white = PhotoImage(file=f"{getcwd()}/images/white.png")
-orange = PhotoImage(file=f"{getcwd()}/images/orange.png")
+cwd = getcwd()
+enableImage = PhotoImage(file=f"{cwd}/images/Enable.png")
+disableImage = PhotoImage(file=f"{cwd}/images/Disable.png")
+bg = PhotoImage(file=f"{cwd}/images/bg.png")
+white = PhotoImage(file=f"{cwd}/images/white.png")
+orange = PhotoImage(file=f"{cwd}/images/orange.png")
 root.iconphoto(True, white)
 
+Label(root, image=bg).place(x=0, y=0, relheight=1, relwidth=1)
 
 class App:
     def __init__(self, master):
@@ -29,36 +34,46 @@ class App:
         self.disableFrame(master)
         self.checkboxFrame(master)
         self.statusFrame(master)
+        # self.menu(master)
         
+    def menu(self, master):
+        global rootMenu
+        root.config(menu=rootMenu)
+        fileMenu = Menu(rootMenu)
+        rootMenu.add_cascade(label="File", menu=fileMenu)
+        rootMenu.add_separator()
+        fileMenu.add_command(label="Settings", command=master.quit)
+        rootMenu.add_separator()
+        fileMenu.add_command(label="Exit", command=master.quit)
     
     def enableFrame(self, master):
-        frame = Frame(master=master)
+        frame = Frame(master=master,bg="#1E1E1E")
         frame.pack(pady=5)
-        self.enableLabel = Label(frame, text="Enable Cloudflare WARP")
+        self.enableLabel = Label(frame, text="Enable Cloudflare WARP",bg="#1E1E1E", foreground="white", width=30)
         self.enableLabel.grid(row=0,column=0, padx=20)
-        self.enableButton = Button(frame, text="Enable", command=lambda: Thread(target=self.enableCallback).start(),width=10)
+        self.enableButton = Button(frame,image=enableImage, borderwidth=0, text="Enable", command=lambda: Thread(target=self.enableCallback).start(),width=75,bg="#1E1E1E",activebackground="#1E1E1E",highlightthickness=0, foreground="white")
         self.enableButton.grid(row=0, column=1)
         
     def disableFrame(self, master):
-        frame = Frame(master=master)
+        frame = Frame(master=master,bg="#1E1E1E")
         frame.pack(pady=5)
-        self.enableLabel = Label(frame, text="Disable Cloudflare WARP")
+        self.enableLabel = Label(frame, text="Disable Cloudflare WARP",bg="#1E1E1E", foreground="white",width=30)
         self.enableLabel.grid(row=1,column=0, padx=20)
-        self.enableButton = Button(frame, text="Disable", command=lambda: Thread(target=self.disableCallback).start(),width=10)
+        self.enableButton = Button(frame,image=disableImage,borderwidth=0, text="Disable",command=lambda: Thread(target=self.disableCallback).start(),width=75,bg="#1E1E1E",activebackground="#1E1E1E",highlightthickness=0, foreground="white")
         self.enableButton.grid(row=1, column=1)
     
     def checkboxFrame(self, master):
-        frame = Frame(master=master)
-        frame.pack(pady=5)
-        checkButton = Checkbutton(frame, textvariable=self.taskbarText,command=lambda: Thread(target=self.taskbar).start())
+        frame = Frame(master=master,bg="#1E1E1E")
+        frame.pack(pady=35)
+        checkButton = Checkbutton(frame, textvariable=self.taskbarText,command=lambda: Thread(target=self.taskbar).start(),bg="#1E1E1E", borderwidth=0,activebackground="#1E1E1E",highlightthickness=0,activeforeground="white",foreground="grey")
         checkButton.pack()
     
     
     def statusFrame(self, master):
-        frame = Frame(master=master)
-        frame.pack(pady=20)
-        self.statusLabel = Label(frame, textvariable=self.status)
-        self.statusLabel.pack()
+        frame = Frame(master=master,bg="#1E1E1E")
+        frame.pack()
+        self.statusLabel = Label(frame, textvariable=self.status,bg="#343434", foreground="white")
+        self.statusLabel.grid(row=2, column=0, columnspan=3)
     
     def enableCallback(self, ):
         popen("warp-cli connect").read()
