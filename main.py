@@ -10,6 +10,8 @@ root = Tk()
 rootMenu = Menu(root)
 root.title("Cloudflare WARP")
 root.geometry("470x200")
+# root.configure(bg="#000000")
+root.resizable(False, False)
 white = PhotoImage(file=f"{getcwd()}/images/white.png")
 orange = PhotoImage(file=f"{getcwd()}/images/orange.png")
 root.iconphoto(True, white)
@@ -21,11 +23,14 @@ class App:
         self.status= StringVar()
         self.taskbarText = StringVar()
         self.taskbarCheck = None
+        self.taskbar()
         self.statusCheck()
         self.enableFrame(master)
         self.disableFrame(master)
+        self.checkboxFrame(master)
         self.statusFrame(master)
         
+    
     def enableFrame(self, master):
         frame = Frame(master=master)
         frame.pack(pady=5)
@@ -41,6 +46,13 @@ class App:
         self.enableLabel.grid(row=1,column=0, padx=20)
         self.enableButton = Button(frame, text="Disable", command=lambda: Thread(target=self.disableCallback).start(),width=10)
         self.enableButton.grid(row=1, column=1)
+    
+    def checkboxFrame(self, master):
+        frame = Frame(master=master)
+        frame.pack(pady=5)
+        checkButton = Checkbutton(frame, textvariable=self.taskbarText,command=lambda: Thread(target=self.taskbar).start())
+        checkButton.pack()
+    
     
     def statusFrame(self, master):
         frame = Frame(master=master)
@@ -62,13 +74,13 @@ class App:
         return True
     
     def taskbar(self):
-        if taskbarCheck == False:
+        if self.taskbarCheck == False:
             self.taskbarText.set("Disable warp taskbar icon")
-            taskbarCheck = True
+            self.taskbarCheck = True
             popen("warp-taskbar").read()
         else:
             self.taskbarText.set("Enable warp taskbar icon")
-            taskbarCheck = False
+            self.taskbarCheck = False
             popen("pkill -f warp-taskbar").read()
     
     def statusCheck(self):
@@ -110,7 +122,7 @@ class App:
         global root
         popen("warp-cli disconnect").read()
         popen("pkill -f warp-taskbar").read()
-        root.exit()
+        root.quit()
     
 if __name__ == "__main__":
     app = App(root)
