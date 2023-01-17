@@ -1,4 +1,4 @@
-from tkinter import Tk, Label, Button,messagebox, Checkbutton,Canvas
+from tkinter import Tk, Label, Button,messagebox, Checkbutton,Frame,Menu
 from tkinter import StringVar, PhotoImage, IntVar
 from threading import Thread
 from os import popen, getcwd
@@ -6,6 +6,7 @@ from time import sleep
 import sys, json
 
 root = Tk()
+rootMenu = Menu(root)
 root.title("Cloudflare WARP")
 root.geometry("470x200")
 # root.configure(bg="#000000")
@@ -17,9 +18,7 @@ status= StringVar()
 taskbarText = StringVar()
 taskbarCheck = None
 
-enableLabel = Label(root, text="Enable Cloudflare WARP").grid(row=0, column=0, padx=90, pady=5)
-disableLabel = Label(root, text="Disable Cloudflare WARP").grid(row=1, column=0,padx=5, pady=5)
-statusLabel = Label(root, textvariable=status, width=50).grid(row=3,columnspan=2, pady=60)
+
 def introMessage():
     with open("settings.json", "r") as f:
         settings = json.load(f)
@@ -69,7 +68,6 @@ def taskbar():
         popen("pkill -f warp-taskbar").read()
 
 def statusCheck():
-    taskbar()
     command= popen("warp-cli status").read()
     for i in command.split("\n"):
         if len(i) > 7:
@@ -88,14 +86,23 @@ def on_exit():
     popen("pkill -f warp-taskbar").read()
     root.quit()
     
+fileMenu = Menu(rootMenu)
+rootMenu.add_cascade(label="File", command=fileMenu)
+rootMenu.add_command(label="Exit", command=root.quit)
+enableFrame = Frame()
+enableLabel = Label(root, text="Enable Cloudflare WARP").grid(row=0, column=0, padx=90, pady=5)
+enableButton =Button(root, text="Enable", command=lambda: Thread(target=enableCallback).start(), width=10).grid(row=0, column=1,padx=5, pady=5)
 
-Button(root, text="Enable", command=lambda: Thread(target=enableCallback).start(), width=10).grid(row=0, column=1,padx=5, pady=5)
-Button(root, text="Disable", command=lambda: Thread(target=disableCallback).start(), width=10).grid(row=1, column=1,padx=5, pady=5)
+
+disableLabel = Label(root, text="Disable Cloudflare WARP").grid(row=1, column=0,padx=5, pady=5)
+disableButton= Button(root, text="Disable", command=lambda: Thread(target=disableCallback).start(), width=10).grid(row=1, column=1,padx=5, pady=5)
+
 checkButton = Checkbutton(root, textvariable=taskbarText,command=lambda: Thread(target=taskbar).start()).grid(row=2,columnspan=2, pady=5)
-
+statusLabel = Label(root, textvariable=status, width=50).grid(row=3,columnspan=2, pady=60)
 
 
 root.protocol("WM_DELETE_WINDOW", on_exit)
+taskbar()
 startup()
 statusCheck()
 root.mainloop()
