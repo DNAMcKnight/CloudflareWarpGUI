@@ -1,7 +1,9 @@
 from tkinter import *
+from tkinter import messagebox
 from os import popen, getcwd
 from time import sleep
 from threading import Thread
+import json, sys
 
 
 root = Tk()
@@ -15,6 +17,7 @@ root.iconphoto(True, white)
 
 class App:
     def __init__(self, master):
+        self.startup()
         self.status= StringVar()
         self.taskbarText = StringVar()
         self.taskbarCheck = None
@@ -82,6 +85,27 @@ class App:
             root.iconphoto(True, orange)
         return True
     
+    def introMessage(self):
+        with open("settings.json", "r") as f:
+            settings = json.load(f)
+            if settings["startupMsg"]:
+                messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving a star ⭐ !")
+            with open("settings.json", "w") as write:
+                settings['startupMsg'] = False
+                json.dump(settings, write)
+
+    def startup(self):
+        self.introMessage()
+        if sys.platform != "linux":
+            messagebox.showerror("Error", "Sorry but this script only works on Linux!")
+            sys.exit()
+        if sys.version_info.major < 3:
+            messagebox.showerror("Error", "The script requires python 3 or above!")
+            sys.exit()
+        if (popen("systemctl is-active  warp-svc").read()).rstrip() == "inactive":
+            messagebox.showerror("Error", "Start daemon from CLI with\n'sudo systemctl start warp-svc'\nand ensure registration has run first.")
+            sys.exit()
+            
     def on_exit(self):
         global root
         popen("warp-cli disconnect").read()
@@ -90,4 +114,5 @@ class App:
     
 if __name__ == "__main__":
     app = App(root)
+    root.protocol("WM_DELETE_WINDOW", app.on_exit)
     root.mainloop()
