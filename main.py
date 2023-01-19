@@ -180,7 +180,7 @@ class App:
     def startup(self):
         self.introMessage()
         if sys.platform != "linux":
-            # messagebox.showerror("Error", "Sorry but this script only works on Linux!")
+            messagebox.showerror("Error", "Some features might not work correctly on windows.")
             # print(sys.platform)
             # sys.exit()
         if sys.version_info.major < 3:
