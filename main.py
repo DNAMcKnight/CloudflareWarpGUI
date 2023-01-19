@@ -15,11 +15,12 @@ cwd = getcwd()
 
 visuals = {
     "blue": {"buttons": {"normal": PhotoImage(file=f"{cwd}/images/blue.png"), "highlight": PhotoImage(file=f"{cwd}/images/blue_highlight.png")}, "colors": {"normal": "#0466C8", "highlight": "#0074FD"}},
+    "red": {"buttons": {"normal": PhotoImage(file=f"{cwd}/images/red.png"), "highlight": PhotoImage(file=f"{cwd}/images/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
     "colors": {"bg": "#1E1E1E"},
     "images": {"logo": {"white": PhotoImage(file=f"{cwd}/images/white.png"), "orange": PhotoImage(file=f"{cwd}/images/orange.png")}},
 }
 
-root.configure(bg=visuals['colors']['bg'])
+root.configure(bg=visuals["colors"]["bg"])
 root.iconphoto(True, visuals["images"]["logo"]["white"])
 
 # Label(root, image=bgImage).place(x=0, y=0, relheight=1, relwidth=1)
@@ -55,10 +56,11 @@ class App:
         """Enable frame that has text and a button attached to it"""
         frame = Frame(master=master, bg=self.bg)
         frame.pack(pady=5)
+        spacer = Frame(frame, height= 10, bg=self.bg).grid(row=0,pady=10)
         self.enableLabel = Label(frame, text="Enable Cloudflare WARP", bg=self.bg, foreground="white", width=30)
-        self.enableLabel.grid(row=0, column=0, padx=20)
+        self.enableLabel.grid(row=1, column=0, padx=20)
         self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.enableCallback, text="Enable")
-        self.enableButton.grid(row=0, column=1)
+        self.enableButton.grid(row=1, column=1)
         return True
 
     def disableFrame(self, master):
@@ -67,36 +69,47 @@ class App:
         frame.pack(pady=5)
         self.enableLabel = Label(frame, text="Disable Cloudflare WARP", bg=self.bg, foreground="white", width=30)
         self.enableLabel.grid(row=1, column=0, padx=20)
-        self.disableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.disableCallback, text="Disable")
+        self.disableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["red"], callback=self.disableCallback, text="Disable")
         self.disableButton.grid(row=1, column=1)
         return True
 
     def buttonCreate(self, master, bg, type, callback, text):
         """generates a button using an image"""
         frame = Frame(master=master, bg=bg)
-        button = Button(frame, image=type["buttons"]["normal"], borderwidth=0, text=text, command=lambda: Thread(target=callback).start(), width=75, bg=bg, activebackground=bg, highlightthickness=0, foreground="white")
+        button = Button(
+            frame,
+            image=type["buttons"]["normal"],
+            borderwidth=0,
+            text=text,
+            command=lambda: Thread(target=callback).start(),
+            width=75,
+            bg=bg,
+            activebackground=bg,
+            highlightthickness=0,
+            foreground="white",
+        )
         button.grid(row=0, column=0)
         buttonText = Label(frame, text=text, bg=type["colors"]["normal"], foreground="white")
         buttonText.grid(row=0, column=0)
         buttonText.bind("<Button-1>", lambda event: button.invoke())
-        frame.bind("<Enter>", lambda event: self.buttonHighlightOn(frame, type))
-        frame.bind("<Leave>", lambda event: self.buttonHighlightOff(frame, type))
+        frame.bind("<Enter>", lambda event: self.buttonHighlight(frame, "Enter", type))
+        frame.bind("<Leave>", lambda event: self.buttonHighlight(frame, "Leave", type))
         return frame
 
-    def buttonHighlightOn(self, frame, data):
-        frame.winfo_children()[0].config(image=data["buttons"]["highlight"])
-        frame.winfo_children()[1].config(bg=data["colors"]["highlight"])
+    def buttonHighlight(self, frame, state, data):
+        if state == "Enter":
+            frame.winfo_children()[0].config(image=data["buttons"]["highlight"])
+            frame.winfo_children()[1].config(bg=data["colors"]["highlight"])
+        else:
+            frame.winfo_children()[0].config(image=data["buttons"]["normal"])
+            frame.winfo_children()[1].config(bg=data["colors"]["normal"])
         return True
 
-    def buttonHighlightOff(self, frame, data):
-        frame.winfo_children()[0].config(image=data["buttons"]["normal"])
-        frame.winfo_children()[1].config(bg=data["colors"]["normal"])
-        return True
 
     def checkboxFrame(self, master):
         """checkbox frame  for the checkbox"""
         frame = Frame(master=master, bg=self.bg)
-        frame.pack(pady=35)
+        frame.pack(pady=10)
         checkButton = Checkbutton(
             frame,
             textvariable=self.taskbarText,
@@ -110,19 +123,17 @@ class App:
         )
         checkButton.pack()
         return True
-        
 
     def statusFrame(self, master):
         frame = Frame(master=master, bg="#344966", width=master.winfo_screenwidth())
         frame.pack(side=BOTTOM, fill=X)
         # df2935
-        self.statusLabel = Label(frame, textvariable=self.status, bg="#344966", foreground="white", padx=5)
+        self.statusLabel = Label(frame, textvariable=self.status, bg="#344966", foreground="white", padx=5, pady=4)
         self.statusLabel.pack(side=LEFT)
         return True
 
     def enableCallback(self):
         popen("warp-cli connect").read()
-        root.geometry("470x200")
         self.statusCheck()
         root.iconphoto(True, visuals["images"]["logo"]["orange"])
         return True
