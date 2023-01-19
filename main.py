@@ -10,12 +10,8 @@ root = Tk()
 rootMenu = Menu(root)
 root.title("Cloudflare WARP")
 root.geometry("470x200")
-bg = "#1E1E1E"
-root.configure(bg=bg)
-# root.resizable(False, False)
+root.resizable(False, False)
 cwd = getcwd()
-blueB = PhotoImage(file=f"{cwd}/images/blue.png")
-blueH = PhotoImage(file=f"{cwd}/images/blue_highlight.png")
 
 visuals = {
     "blue": {"buttons": {"normal": PhotoImage(file=f"{cwd}/images/blue.png"), "highlight": PhotoImage(file=f"{cwd}/images/blue_highlight.png")}, "colors": {"normal": "#0466C8", "highlight": "#0074FD"}},
@@ -23,6 +19,7 @@ visuals = {
     "images": {"logo": {"white": PhotoImage(file=f"{cwd}/images/white.png"), "orange": PhotoImage(file=f"{cwd}/images/orange.png")}},
 }
 
+root.configure(bg=visuals['colors']['bg'])
 root.iconphoto(True, visuals["images"]["logo"]["white"])
 
 # Label(root, image=bgImage).place(x=0, y=0, relheight=1, relwidth=1)
@@ -45,7 +42,6 @@ class App:
 
     def menu(self, master):
         """creates a menu"""
-        global rootMenu
         root.config(menu=rootMenu)
         fileMenu = Menu(rootMenu)
         rootMenu.add_cascade(label="File", menu=fileMenu)
@@ -53,6 +49,7 @@ class App:
         fileMenu.add_command(label="Settings", command=master.quit)
         rootMenu.add_separator()
         fileMenu.add_command(label="Exit", command=master.quit)
+        return True
 
     def enableFrame(self, master):
         """Enable frame that has text and a button attached to it"""
@@ -62,7 +59,7 @@ class App:
         self.enableLabel.grid(row=0, column=0, padx=20)
         self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.enableCallback, text="Enable")
         self.enableButton.grid(row=0, column=1)
-        return
+        return True
 
     def disableFrame(self, master):
         """Disable frame that has text and a button attached to it"""
@@ -72,7 +69,7 @@ class App:
         self.enableLabel.grid(row=1, column=0, padx=20)
         self.disableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.disableCallback, text="Disable")
         self.disableButton.grid(row=1, column=1)
-        return
+        return True
 
     def buttonCreate(self, master, bg, type, callback, text):
         """generates a button using an image"""
@@ -89,10 +86,12 @@ class App:
     def buttonHighlightOn(self, frame, data):
         frame.winfo_children()[0].config(image=data["buttons"]["highlight"])
         frame.winfo_children()[1].config(bg=data["colors"]["highlight"])
+        return True
 
     def buttonHighlightOff(self, frame, data):
         frame.winfo_children()[0].config(image=data["buttons"]["normal"])
         frame.winfo_children()[1].config(bg=data["colors"]["normal"])
+        return True
 
     def checkboxFrame(self, master):
         """checkbox frame  for the checkbox"""
@@ -110,6 +109,8 @@ class App:
             foreground="grey",
         )
         checkButton.pack()
+        return True
+        
 
     def statusFrame(self, master):
         frame = Frame(master=master, bg="#344966", width=master.winfo_screenwidth())
@@ -117,10 +118,9 @@ class App:
         # df2935
         self.statusLabel = Label(frame, textvariable=self.status, bg="#344966", foreground="white", padx=5)
         self.statusLabel.pack(side=LEFT)
+        return True
 
-    def enableCallback(
-        self,
-    ):
+    def enableCallback(self):
         popen("warp-cli connect").read()
         root.geometry("470x200")
         self.statusCheck()
