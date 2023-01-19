@@ -10,22 +10,29 @@ root = Tk()
 rootMenu = Menu(root)
 root.title("Cloudflare WARP")
 root.geometry("470x200")
-root.configure(bg="#1E1E1E")
-root.resizable(False, False)
+bg = "#1E1E1E"
+root.configure(bg=bg)
+# root.resizable(False, False)
 cwd = getcwd()
-enableImage = PhotoImage(file=f"{cwd}/images/Enable.png")
-disableImage = PhotoImage(file=f"{cwd}/images/Disable.png")
-bg = PhotoImage(file=f"{cwd}/images/bg.png")
-white = PhotoImage(file=f"{cwd}/images/white.png")
-orange = PhotoImage(file=f"{cwd}/images/orange.png")
-root.iconphoto(True, white)
+blueB = PhotoImage(file=f"{cwd}/images/blue.png")
+blueH = PhotoImage(file=f"{cwd}/images/blue_highlight.png")
 
-Label(root, image=bg).place(x=0, y=0, relheight=1, relwidth=1)
+visuals = {
+    "blue": {"buttons": {"normal": PhotoImage(file=f"{cwd}/images/blue.png"), "highlight": PhotoImage(file=f"{cwd}/images/blue_highlight.png")}, "colors": {"normal": "#0466C8", "highlight": "#0074FD"}},
+    "colors": {"bg": "#1E1E1E"},
+    "images": {"logo": {"white": PhotoImage(file=f"{cwd}/images/white.png"), "orange": PhotoImage(file=f"{cwd}/images/orange.png")}},
+}
+
+root.iconphoto(True, visuals["images"]["logo"]["white"])
+
+# Label(root, image=bgImage).place(x=0, y=0, relheight=1, relwidth=1)
+
 
 class App:
     def __init__(self, master):
+        self.bg = visuals["colors"]["bg"]
         self.startup()
-        self.status= StringVar()
+        self.status = StringVar()
         self.taskbarText = StringVar()
         self.taskbarCheck = None
         self.taskbar()
@@ -35,8 +42,9 @@ class App:
         self.checkboxFrame(master)
         self.statusFrame(master)
         # self.menu(master)
-        
+
     def menu(self, master):
+        """creates a menu"""
         global rootMenu
         root.config(menu=rootMenu)
         fileMenu = Menu(rootMenu)
@@ -45,49 +53,86 @@ class App:
         fileMenu.add_command(label="Settings", command=master.quit)
         rootMenu.add_separator()
         fileMenu.add_command(label="Exit", command=master.quit)
-    
+
     def enableFrame(self, master):
-        frame = Frame(master=master,bg="#1E1E1E")
+        """Enable frame that has text and a button attached to it"""
+        frame = Frame(master=master, bg=self.bg)
         frame.pack(pady=5)
-        self.enableLabel = Label(frame, text="Enable Cloudflare WARP",bg="#1E1E1E", foreground="white", width=30)
-        self.enableLabel.grid(row=0,column=0, padx=20)
-        self.enableButton = Button(frame,image=enableImage, borderwidth=0, text="Enable", command=lambda: Thread(target=self.enableCallback).start(),width=75,bg="#1E1E1E",activebackground="#1E1E1E",highlightthickness=0, foreground="white")
+        self.enableLabel = Label(frame, text="Enable Cloudflare WARP", bg=self.bg, foreground="white", width=30)
+        self.enableLabel.grid(row=0, column=0, padx=20)
+        self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.enableCallback, text="Enable")
         self.enableButton.grid(row=0, column=1)
-        
+        return
+
     def disableFrame(self, master):
-        frame = Frame(master=master,bg="#1E1E1E")
+        """Disable frame that has text and a button attached to it"""
+        frame = Frame(master=master, bg=self.bg)
         frame.pack(pady=5)
-        self.enableLabel = Label(frame, text="Disable Cloudflare WARP",bg="#1E1E1E", foreground="white",width=30)
-        self.enableLabel.grid(row=1,column=0, padx=20)
-        self.enableButton = Button(frame,image=disableImage,borderwidth=0, text="Disable",command=lambda: Thread(target=self.disableCallback).start(),width=75,bg="#1E1E1E",activebackground="#1E1E1E",highlightthickness=0, foreground="white")
-        self.enableButton.grid(row=1, column=1)
-    
+        self.enableLabel = Label(frame, text="Disable Cloudflare WARP", bg=self.bg, foreground="white", width=30)
+        self.enableLabel.grid(row=1, column=0, padx=20)
+        self.disableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.disableCallback, text="Disable")
+        self.disableButton.grid(row=1, column=1)
+        return
+
+    def buttonCreate(self, master, bg, type, callback, text):
+        """generates a button using an image"""
+        frame = Frame(master=master, bg=bg)
+        button = Button(frame, image=type["buttons"]["normal"], borderwidth=0, text=text, command=lambda: Thread(target=callback).start(), width=75, bg=bg, activebackground=bg, highlightthickness=0, foreground="white")
+        button.grid(row=0, column=0)
+        buttonText = Label(frame, text=text, bg=type["colors"]["normal"], foreground="white")
+        buttonText.grid(row=0, column=0)
+        buttonText.bind("<Button-1>", lambda event: button.invoke())
+        frame.bind("<Enter>", lambda event: self.buttonHighlightOn(frame, type))
+        frame.bind("<Leave>", lambda event: self.buttonHighlightOff(frame, type))
+        return frame
+
+    def buttonHighlightOn(self, frame, data):
+        frame.winfo_children()[0].config(image=data["buttons"]["highlight"])
+        frame.winfo_children()[1].config(bg=data["colors"]["highlight"])
+
+    def buttonHighlightOff(self, frame, data):
+        frame.winfo_children()[0].config(image=data["buttons"]["normal"])
+        frame.winfo_children()[1].config(bg=data["colors"]["normal"])
+
     def checkboxFrame(self, master):
-        frame = Frame(master=master,bg="#1E1E1E")
+        """checkbox frame  for the checkbox"""
+        frame = Frame(master=master, bg=self.bg)
         frame.pack(pady=35)
-        checkButton = Checkbutton(frame, textvariable=self.taskbarText,command=lambda: Thread(target=self.taskbar).start(),bg="#1E1E1E", borderwidth=0,activebackground="#1E1E1E",highlightthickness=0,activeforeground="white",foreground="grey")
+        checkButton = Checkbutton(
+            frame,
+            textvariable=self.taskbarText,
+            command=lambda: Thread(target=self.taskbar).start(),
+            bg=self.bg,
+            borderwidth=0,
+            activebackground=self.bg,
+            highlightthickness=0,
+            activeforeground="white",
+            foreground="grey",
+        )
         checkButton.pack()
-    
-    
+
     def statusFrame(self, master):
-        frame = Frame(master=master,bg="#1E1E1E")
-        frame.pack()
-        self.statusLabel = Label(frame, textvariable=self.status,bg="#343434", foreground="white")
-        self.statusLabel.grid(row=2, column=0, columnspan=3)
-    
-    def enableCallback(self, ):
+        frame = Frame(master=master, bg="#344966", width=master.winfo_screenwidth())
+        frame.pack(side=BOTTOM, fill=X)
+        # df2935
+        self.statusLabel = Label(frame, textvariable=self.status, bg="#344966", foreground="white", padx=5)
+        self.statusLabel.pack(side=LEFT)
+
+    def enableCallback(
+        self,
+    ):
         popen("warp-cli connect").read()
         root.geometry("470x200")
         self.statusCheck()
-        root.iconphoto(True, orange)
+        root.iconphoto(True, visuals["images"]["logo"]["orange"])
         return True
-    
+
     def disableCallback(self):
         popen("warp-cli disconnect").read()
         self.statusCheck()
-        root.iconphoto(True, white)
+        root.iconphoto(True, visuals["images"]["logo"]["white"])
         return True
-    
+
     def taskbar(self):
         if self.taskbarCheck == False:
             self.taskbarText.set("Disable warp taskbar icon")
@@ -97,28 +142,28 @@ class App:
             self.taskbarText.set("Enable warp taskbar icon")
             self.taskbarCheck = False
             popen("pkill -f warp-taskbar").read()
-    
+
     def statusCheck(self):
-        command= popen("warp-cli status").read()
+        command = popen("warp-cli status").read()
         for i in command.split("\n"):
             if len(i) > 7:
                 print((i.split())[-1])
                 break
-        self.status.set(i)
+        self.status.set(i.replace("update:", ":"))
         if "Connecting" in i:
             sleep(1)
             self.statusCheck()
         if i.split()[-1] == "Connected":
-            root.iconphoto(True, orange)
+            root.iconphoto(True, visuals["images"]["logo"]["orange"])
         return True
-    
+
     def introMessage(self):
         with open("settings.json", "r") as f:
             settings = json.load(f)
             if settings["startupMsg"]:
-                messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving a star ⭐ !")
+                messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving a star ⭐")
             with open("settings.json", "w") as write:
-                settings['startupMsg'] = False
+                settings["startupMsg"] = False
                 json.dump(settings, write)
 
     def startup(self):
@@ -132,13 +177,13 @@ class App:
         if (popen("systemctl is-active  warp-svc").read()).rstrip() == "inactive":
             messagebox.showerror("Error", "Start daemon from CLI with\n'sudo systemctl start warp-svc'\nand ensure registration has run first.")
             sys.exit()
-            
+
     def on_exit(self):
-        global root
         popen("warp-cli disconnect").read()
         popen("pkill -f warp-taskbar").read()
         root.quit()
-    
+
+
 if __name__ == "__main__":
     app = App(root)
     root.protocol("WM_DELETE_WINDOW", app.on_exit)
