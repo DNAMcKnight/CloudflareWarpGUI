@@ -57,20 +57,20 @@ class App:
         frame = Frame(master=master, bg=self.bg)
         frame.pack(pady=5)
         spacer = Frame(frame, height= 10, bg=self.bg).grid(row=0,pady=10)
-        self.enableLabel = Label(frame, text="Enable Cloudflare WARP", bg=self.bg, foreground="white", width=30)
-        self.enableLabel.grid(row=1, column=0, padx=20)
+        self.enableLabel = Label(frame, text="Enable Cloudflare WARP", bg=self.bg, foreground="white", width=25)
+        self.enableLabel.grid(row=1, column=0)
         self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.enableCallback, text="Enable")
-        self.enableButton.grid(row=1, column=1)
+        self.enableButton.grid(row=1, column=1, padx=25)
         return True
 
     def disableFrame(self, master):
         """Disable frame that has text and a button attached to it"""
         frame = Frame(master=master, bg=self.bg)
         frame.pack(pady=5)
-        self.enableLabel = Label(frame, text="Disable Cloudflare WARP", bg=self.bg, foreground="white", width=30)
-        self.enableLabel.grid(row=1, column=0, padx=20)
+        self.enableLabel = Label(frame, text="Disable Cloudflare WARP", bg=self.bg, foreground="white", width=25)
+        self.enableLabel.grid(row=1, column=0)
         self.disableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["red"], callback=self.disableCallback, text="Disable")
-        self.disableButton.grid(row=1, column=1)
+        self.disableButton.grid(row=1, column=1, padx=25)
         return True
 
     def buttonCreate(self, master, bg, type, callback, text):
@@ -180,8 +180,9 @@ class App:
     def startup(self):
         self.introMessage()
         if sys.platform != "linux":
-            messagebox.showerror("Error", "Sorry but this script only works on Linux!")
-            sys.exit()
+            # messagebox.showerror("Error", "Sorry but this script only works on Linux!")
+            # print(sys.platform)
+            # sys.exit()
         if sys.version_info.major < 3:
             messagebox.showerror("Error", "The script requires python 3 or above!")
             sys.exit()
