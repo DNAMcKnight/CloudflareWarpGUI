@@ -3,7 +3,7 @@ from tkinter import messagebox
 from os import popen, getcwd
 from time import sleep
 from threading import Thread
-import json, sys
+import json, sys,subprocess
 
 
 root = Tk()
@@ -148,11 +148,17 @@ class App:
         if self.taskbarCheck == False:
             self.taskbarText.set("Disable warp taskbar icon")
             self.taskbarCheck = True
-            popen("warp-taskbar").read()
+            if sys.platform == "win32":
+                popen("C:/Program Files/Cloudflare/Cloudflare WARP/Cloudflare WARP.exe").read()
+            else:
+                popen("warp-taskbar").read()
         else:
             self.taskbarText.set("Enable warp taskbar icon")
             self.taskbarCheck = False
-            popen("pkill -f warp-taskbar").read()
+            if sys.platform == "win32":
+                subprocess.call('TASKKILL /F /IM "Cloudflare WARP.exe"', shell=True)
+            else:
+                popen("pkill -f warp-taskbar").read()
 
     def statusCheck(self):
         command = popen("warp-cli status").read()
@@ -192,7 +198,11 @@ class App:
 
     def on_exit(self):
         popen("warp-cli disconnect").read()
-        popen("pkill -f warp-taskbar").read()
+        if sys.platform == "win32":
+            subprocess.call('TASKKILL /F /IM "Cloudflare WARP.exe"', shell=True)
+        else:
+            popen("pkill -f warp-taskbar").read()
+
         root.quit()
 
 
