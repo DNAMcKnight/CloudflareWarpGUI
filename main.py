@@ -1,23 +1,28 @@
-#! 
-
 from tkinter import *
 from tkinter import messagebox
-from os import popen
+from os import popen,path
 from time import sleep
 from threading import Thread
 import json, sys,subprocess
 
+# Path changes if you're using the compiled version of the app
+if getattr(sys, 'frozen', False):
+    path = f"{sys._MEIPASS}/"
+else:
+    path = ""
+    
 root = Tk()
 rootMenu = Menu(root)
 root.title("Cloudflare WARP")
-root.geometry("470x200")
+root.geometry(f"470x200")
 root.resizable(False, False)
 
+# To easily use colors and images together this little dict does the job.
 visuals = {
-    "blue": {"buttons": {"normal": PhotoImage(file=f"assets/blue.png"), "highlight": PhotoImage(file=f"assets/blue_highlight.png")}, "colors": {"normal": "#0466C8", "highlight": "#0074FD"}},
-    "red": {"buttons": {"normal": PhotoImage(file=f"assets/red.png"), "highlight": PhotoImage(file=f"assets/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
+    "blue": {"buttons": {"normal": PhotoImage(file=f"{path}assets/blue.png"), "highlight": PhotoImage(file=f"{path}assets/blue_highlight.png")}, "colors": {"normal": "#0466C8", "highlight": "#0074FD"}},
+    "red": {"buttons": {"normal": PhotoImage(file=f"{path}assets/red.png"), "highlight": PhotoImage(file=f"{path}assets/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
     "colors": {"bg": "#1E1E1E"},
-    "images": {"logo": {"white": PhotoImage(file=f"assets/white.png"), "orange": PhotoImage(file=f"assets/orange.png")}},
+    "images": {"logo": {"white": PhotoImage(file=f"{path}assets/white.png"), "orange": PhotoImage(file=f"{path}assets/orange.png")}},
 }
 
 root.configure(bg=visuals["colors"]["bg"])
@@ -39,8 +44,8 @@ class App:
         self.disableFrame(master)
         self.checkboxFrame(master)
         self.statusFrame(master)
-        # self.menu(master)
 
+    # The default menu is left unused, we might make one in the near future.
     def menu(self, master):
         """creates a menu"""
         root.config(menu=rootMenu)
@@ -52,6 +57,7 @@ class App:
         fileMenu.add_command(label="Exit", command=master.quit)
         return True
 
+    # This contains the Text and button all put together in a frame.
     def enableFrame(self, master):
         """Enable frame that has text and a button attached to it"""
         frame = Frame(master=master, bg=self.bg)
@@ -63,6 +69,7 @@ class App:
         self.enableButton.grid(row=1, column=1, padx=25)
         return True
 
+    # Same as the enableFrame
     def disableFrame(self, master):
         """Disable frame that has text and a button attached to it"""
         frame = Frame(master=master, bg=self.bg)
@@ -73,6 +80,7 @@ class App:
         self.disableButton.grid(row=1, column=1, padx=25)
         return True
 
+    # This handles all the button Text and Image and hover for us
     def buttonCreate(self, master, bg, type, callback, text):
         """generates a button using an image"""
         frame = Frame(master=master, bg=bg)
@@ -97,6 +105,7 @@ class App:
         return frame
 
     def buttonHighlight(self, frame, state, data):
+        """Changes the highlight depending on the backgound color"""
         if state == "Enter":
             frame.winfo_children()[0].config(image=data["buttons"]["highlight"])
             frame.winfo_children()[1].config(bg=data["colors"]["highlight"])
@@ -125,6 +134,7 @@ class App:
         return True
 
     def statusFrame(self, master):
+        """This is the taskbar"""
         frame = Frame(master=master, bg="#344966", width=master.winfo_screenwidth())
         frame.pack(side=BOTTOM, fill=X)
         # df2935
@@ -133,18 +143,21 @@ class App:
         return True
 
     def enableCallback(self):
+        """Callback function for enable button which also changes the icon"""
         popen("warp-cli connect").read()
         self.statusCheck()
         root.iconphoto(True, visuals["images"]["logo"]["orange"])
         return True
 
     def disableCallback(self):
+        """Callback for disable button and changes the icon"""
         popen("warp-cli disconnect").read()
         self.statusCheck()
         root.iconphoto(True, visuals["images"]["logo"]["white"])
         return True
 
     def taskbar(self):
+        """Enables/disables the taskbar icon on Windows and Linux"""
         if self.taskbarCheck == False:
             self.taskbarText.set("Disable warp taskbar icon")
             self.taskbarCheck = True
@@ -161,6 +174,7 @@ class App:
                 popen("pkill -f warp-taskbar").read()
 
     def statusCheck(self):
+        """This does the connection checks and updates taskbar"""
         command = popen("warp-cli status").read()
         for i in command.split("\n"):
             if len(i) > 7:
@@ -175,15 +189,18 @@ class App:
         return True
 
     def introMessage(self):
-        with open("settings.json", "r") as f:
+        """This is where the first time intro message is generated"""
+        #TODO If there is no settings file, create one and save the settings within it.
+        with open(f"{path}settings.json", "r") as f:
             settings = json.load(f)
             if settings["startupMsg"]:
                 messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving a star ⭐")
-            with open("settings.json", "w") as write:
+            with open(f"{path}settings.json", "w") as write:
                 settings["startupMsg"] = False
                 json.dump(settings, write)
 
     def startup(self):
+        """This is responsible to check if the system meets the requirements to run the program"""
         self.introMessage()
         if sys.platform != "linux":
             messagebox.showerror("Error", "Some features might not work correctly on windows.")
@@ -197,6 +214,7 @@ class App:
             sys.exit()
 
     def on_exit(self):
+        """On exit this function is run to kill all the processes."""
         popen("warp-cli disconnect").read()
         if sys.platform == "win32":
             subprocess.call('TASKKILL /F /IM "Cloudflare WARP.exe"', shell=True)
