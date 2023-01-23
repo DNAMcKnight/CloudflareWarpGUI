@@ -14,7 +14,10 @@ else:
 root = Tk()
 rootMenu = Menu(root)
 root.title("Cloudflare WARP")
-root.geometry(f"470x200")
+width, height = 470, 200
+widthCenter = int(root.winfo_screenwidth() / 2 - width / 2)
+heightCenter = int(root.winfo_screenheight() / 2 - height / 2)
+root.geometry(f"470x200+{widthCenter}+{heightCenter}")
 root.resizable(False, False)
 
 # To easily use colors and images together this little dict does the job.
@@ -203,7 +206,7 @@ class App:
         """This is responsible to check if the system meets the requirements to run the program"""
         self.introMessage()
         if sys.platform != "linux":
-            messagebox.showerror("Error", "Some features might not work correctly on windows.")
+            messagebox.showinfo("Warning", "Some features are not yet compatible with windows!")
             # print(sys.platform)
             # sys.exit()
         if sys.version_info.major < 3:
