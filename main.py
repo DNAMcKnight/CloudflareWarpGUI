@@ -1,23 +1,23 @@
+#! 
+
 from tkinter import *
 from tkinter import messagebox
-from os import popen, getcwd
+from os import popen
 from time import sleep
 from threading import Thread
 import json, sys,subprocess
-
 
 root = Tk()
 rootMenu = Menu(root)
 root.title("Cloudflare WARP")
 root.geometry("470x200")
 root.resizable(False, False)
-cwd = getcwd()
 
 visuals = {
-    "blue": {"buttons": {"normal": PhotoImage(file=f"{cwd}/images/blue.png"), "highlight": PhotoImage(file=f"{cwd}/images/blue_highlight.png")}, "colors": {"normal": "#0466C8", "highlight": "#0074FD"}},
-    "red": {"buttons": {"normal": PhotoImage(file=f"{cwd}/images/red.png"), "highlight": PhotoImage(file=f"{cwd}/images/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
+    "blue": {"buttons": {"normal": PhotoImage(file=f"assets/blue.png"), "highlight": PhotoImage(file=f"assets/blue_highlight.png")}, "colors": {"normal": "#0466C8", "highlight": "#0074FD"}},
+    "red": {"buttons": {"normal": PhotoImage(file=f"assets/red.png"), "highlight": PhotoImage(file=f"assets/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
     "colors": {"bg": "#1E1E1E"},
-    "images": {"logo": {"white": PhotoImage(file=f"{cwd}/images/white.png"), "orange": PhotoImage(file=f"{cwd}/images/orange.png")}},
+    "images": {"logo": {"white": PhotoImage(file=f"assets/white.png"), "orange": PhotoImage(file=f"assets/orange.png")}},
 }
 
 root.configure(bg=visuals["colors"]["bg"])
