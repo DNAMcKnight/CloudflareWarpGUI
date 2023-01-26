@@ -178,7 +178,8 @@ class App:
 
     def statusCheck(self):
         """This does the connection checks and updates taskbar"""
-        command = popen("warp-cli status").read()
+        command = popen("warp-cli status").read()            
+        
         for i in command.split("\n"):
             if len(i) > 7:
                 print((i.split())[-1])
@@ -205,14 +206,26 @@ class App:
     def startup(self):
         """This is responsible to check if the system meets the requirements to run the program"""
         self.introMessage()
-        if sys.platform != "linux":
-            messagebox.showinfo("Warning", "Some features are not yet compatible with windows!")
-            # print(sys.platform)
-            # sys.exit()
         if sys.version_info.major < 3:
             messagebox.showerror("Error", "The script requires python 3 or above!")
             sys.exit()
-        if (popen("systemctl is-active  warp-svc").read()).rstrip() == "inactive":
+        if sys.platform != "linux":
+            messagebox.showinfo("Warning", "Some features are not yet compatible with windows!")
+            command = popen("warp-cli status").read()            
+            temp = Label(root, text="Dowloading cloudflare warp please wait...", bg=self.bg, foreground="white")
+            if not command:
+                temp.pack()
+                warp = messagebox.askyesno("Warning", "Warp is required to run this program, would you like to install it?")
+                popen("winget install -e --id Cloudflare.Warp").read() if warp else ""
+                temp.destroy()
+                if warp:
+                    messagebox.showinfo("Success!","Warp has been installed successfully! Please relaunch the app to use it.")
+                else:
+                    messagebox.showerror("Error", "Warp is required, please install Cloudflare Warp from https://cloudflarewarp.com and try again.")
+                sys.exit()
+            # print(sys.platform)
+            # sys.exit()
+        elif (popen("systemctl is-active  warp-svc").read()).rstrip() == "inactive":
             messagebox.showerror("Error", "Start daemon from CLI with\n'sudo systemctl start warp-svc'\nand ensure registration has run first.")
             sys.exit()
 
