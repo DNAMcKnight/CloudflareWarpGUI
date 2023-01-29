@@ -1,31 +1,49 @@
 # CloudflareWarpGUI
-There are two versions of GUI in this repo, but right now the main focus is on the tkinter version
+
+- [What is this?](#what-is-this)
+- [How it works](#how-it-works)
+- [Using the program](#using-the-program)
+- [Windows support](#windows-support)
+- [Why does this exist?](#why-does-this-exist)
+- [Requirements](#requirements)
+- [Download](#download)
+- [Note](#note)
+
+# What is this?
+Cloudflare WARP created by Cloudflare is a VPN that can be used to unblock websites and ports. Unlike other free VPNs on the internet WARP is lot faster and as far as I'm aware it has no limits or ID/Passwords to keep up to date. This project was originally made for Linux systems because there is no GUI for Linux users. The GUI is pretty simple and nothing too complicated but I'll eventually add more settings that's available through the CLI.
+
+# How it works
+This project uses the command line interface of warp known as `warp-cli`. So in order to run the program you must first install Cloudflare Warp from  their website directly https://cloudflarewarp.com or for arch based systems use the AUR repo [cloudflare-warp-bin](https://aur.archlinux.org/packages/cloudflare-warp-bin). To install it on other systems please look it up. The program uses the CLI for you and runs the commands in the background when you interact with the GUI.
+
+# Using the program
+Originally when I started I focused on a modern GUI that used customTkinter and a basic one using Tkinter that's built into python. However now the main focus have shifted to the tkinter version and based upon that we've created [releases](https://github.com/DNAMcKnight/CloudflareWarpGUI/releases).
+
 1. `main.py` uses the old tkinter that comes built in with python, to run this you don't need anything else other than python.
 
-![preview of customTkinter-app.py using builtin Tkinter](https://raw.githubusercontent.com/DNAMcKnight/CloudflareWarpGUI/main/assets/tkinter.png "main.py")
-
-2. `customTkinter-app.py` uses the customTkinter which is a module based on tkinter but looks far better.
-
-![preview of main.py using builtin customTkinter](https://raw.githubusercontent.com/DNAMcKnight/CloudflareWarpGUI/main/assets/customTkinter.png "customTkinter-app.py")
+![preview of main.py using builtin Tkinter](https://raw.githubusercontent.com/DNAMcKnight/CloudflareWarpGUI/main/assets/tkinter.png "main.py")
 
 If you wish to use the `launcher.sh` script please make sure it's pointing to the correct script you wish to run
 
-### This app now works on Windows.
-Although it does work there's a GUI for Windows made by Cloudflare, however this app will give you more control than to just turn it on or off. All the options will be added as I update the app.
+## Windows support
+The `warp cli` can be found on windows as well which means this program should work on windows with some modifications however there is a GUI for Windows made by Cloudflare. The GUI for windows doesn't give you much control either so over time we'll try to make the program more useful for both Windows and Linux platforms.
 
-### As a Linux user you're probably thinking "why does this exist?"
+## Why does this exist?
 
-I have recently moved completely over from windows to Arch Linux (*I use Arch BTW*) and cause of that transition I can't help but miss a few things from windows such as the Warp GUI that let me easily turn it on or off and also was able to minimize into tray.
+I have recently moved completely over from windows to Linux (*I use Arch BTW*) and cause of that transition I can't help but miss a few things from windows such as the Warp GUI that let me easily turn it on or off and also was able to minimize into tray.
 
 While I haven't figured out the tray part yet, I have made a working GUI for now. you can connect and disconnect and it'll show the current status right below it.
 
 # Requirements
+- Cloudflare WARP
 - Python 3.10 (*or above*)
-- customTkinter (*if you're using the better looking version*)
+- customTkinter (*if you're using the customTkinter version*)
 
 ## You will also need to update the `launcher.sh` permissions to run the app directly
 ```sh
 sudo chmod +x launcher.sh
 ```
+# Downlaod
+Make sure you meet the [requirements](#requirements) and download the program from the latest [release](https://github.com/DNAMcKnight/CloudflareWarpGUI/releases)
+
 ## Note
 If you want to move the script to some other place make sure to update the path location in `launcher`
