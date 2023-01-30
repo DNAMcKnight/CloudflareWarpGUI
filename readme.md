@@ -12,7 +12,7 @@
 
 
 # What is this?
-Cloudflare WARP is a fast VPN service offered by Cloudflare. It unblocks websites and ports and has no limits or login credentials to manage. This project was originally made for Linux systems because there is no GUI for Linux users. The GUI that has been developed is user-friendly and intuitive, even for those who are new to VPNs. While the current GUI is simple and straightforward, I am continuously working to add more advanced settings and options that can be accessed through the command line interface (CLI).
+Cloudflare WARP is a fast VPN service offered by Cloudflare. It unblocks websites and ports that has no limits or login credentials to manage. This project was originally made for Linux systems because there is no GUI for Linux users. The GUI that has been developed is user-friendly and intuitive, even for those who are new to VPNs. While the current GUI is simple and straightforward, I am continuously working to add more advanced settings and options that can be accessed through the command line interface (CLI).
 
 # How it works
 The program utilizes the `warp-cli` command line interface, which can be installed from the [Cloudflare website](https://cloudflarewarp.com) or for arch based systems use the AUR repo [cloudflare-warp-bin](https://aur.archlinux.org/packages/cloudflare-warp-bin). To install it on other systems please look it up. The GUI runs commands in the background via the CLI when the user interacts with it.
@@ -20,12 +20,12 @@ The program utilizes the `warp-cli` command line interface, which can be install
 # Using the program
 This program is a graphical user interface (GUI) for the Cloudflare Warp service, which provides a secure and fast connection for your internet traffic.
 
-The main focus of this program is the Tkinter version, which is built into Python, and there are releases available in the [download](#download) section. The GUI is easy to use, with a connect and disconnect button and a tray icon. On Linux, the program runs the `Cloudflare Zero Trust` program, while on Windows, it runs the original `Cloudflare Warp` program. Currently, the program automatically disconnects on exit, but this feature will be configurable in the future.
+The main focus of this program is the Tkinter version, which is built into Python, and there are releases available in the [download](#download) section. The GUI is easy to use, with a connect and disconnect button and a tray icon. The tray icon on Linux runs the `Cloudflare Zero Trust` program, while on Windows, it runs the original `Cloudflare Warp` program. Currently, the program automatically disconnects on exit, but this feature will be configurable in the future.
 
 ![Preview of main.py using built-in Tkinter](https://raw.githubusercontent.com/DNAMcKnight/CloudflareWarpGUI/main/assets/tkinter.png "main.py")
 
 ## Windows support
-The `warp cli` can be found on windows as well which means this program should work on windows with some modifications. However there is already a GUI provided by Cloudflare, but this program aims to make it more useful for both Windows and Linux platforms over time.
+The `warp cli` can be found on windows as well which means this program should work on windows with some modifications. However there is already a GUI provided by Cloudflare, but this project aims to make it more useful for both Windows and Linux platforms over time.
 
 ## Motivation
 Recently, I made a complete transition from Windows to Linux (using Arch Linux) and encountered some challenges. One of the features I missed from Windows was the "Warp GUI" that allowed me to easily turn my VPN connection on or off and also minimize it into the system tray.
