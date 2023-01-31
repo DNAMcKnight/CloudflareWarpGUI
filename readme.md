@@ -1,4 +1,5 @@
 # CloudflareWarpGUI
+[![CloudflareWarpGUI](https://wakatime.com/badge/user/fb640bef-8826-45d4-89a9-dc6e12cf9ebd/project/862a461a-4cb7-45b6-bbad-fa88e1d84a88.svg)](https://wakatime.com/badge/user/fb640bef-8826-45d4-89a9-dc6e12cf9ebd/project/862a461a-4cb7-45b6-bbad-fa88e1d84a88)
 
 ## Table of Content
 - [What is this?](#what-is-this)
