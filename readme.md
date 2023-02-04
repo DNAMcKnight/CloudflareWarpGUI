@@ -23,7 +23,7 @@ This program is a graphical user interface (GUI) for the Cloudflare Warp service
 
 The main focus of this program is the Tkinter version, which is built into Python, and there are releases available in the [download](#download) section. The GUI is easy to use, with a connect and disconnect button and a tray icon. The tray icon on Linux runs the `Cloudflare Zero Trust` program, while on Windows, it runs the original `Cloudflare Warp` program. Currently, the program automatically disconnects on exit, but this feature will be configurable in the future.
 
-![Preview of main.py using built-in Tkinter](https://raw.githubusercontent.com/DNAMcKnight/CloudflareWarpGUI/main/assets/tkinter.png "main.py")
+![Preview of main.py using built-in Tkinter](https://raw.githubusercontent.com/DNAMcKnight/CloudflareWarpGUI/main/screenshots/tkinter.png "main.py")
 
 ## Windows support
 The `warp cli` can be found on windows as well which means this program should work on windows with some modifications. However there is already a GUI provided by Cloudflare, but this project aims to make it more useful for both Windows and Linux platforms over time.
