@@ -1,3 +1,11 @@
+"""
+THIS FILE IS NO LONGER UPDATED!
+
+This app was made using customTkinter which is no longer being maintained.
+Please use main.py instead which is the only maintained version of the app.
+
+"""
+
 import customtkinter as tk
 from customtkinter import StringVar
 from threading import Thread
