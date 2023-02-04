@@ -3,7 +3,7 @@ from tkinter import messagebox
 from os import popen,path
 from time import sleep
 from threading import Thread
-import json, sys,subprocess
+import json, sys,subprocess,webbrowser
 
 # Path changes if you're using the compiled version of the app
 if getattr(sys, 'frozen', False):
@@ -47,19 +47,39 @@ class App:
         self.disableFrame(master)
         self.checkboxFrame(master)
         self.statusFrame(master)
-
+        self.contextMenu(master)
     # The default menu is left unused, we might make one in the near future.
-    def menu(self, master):
+    def contextMenu(self, master):
         """creates a menu"""
-        root.config(menu=rootMenu)
-        fileMenu = Menu(rootMenu)
-        rootMenu.add_cascade(label="File", menu=fileMenu)
-        rootMenu.add_separator()
-        fileMenu.add_command(label="Settings", command=master.quit)
-        rootMenu.add_separator()
-        fileMenu.add_command(label="Exit", command=master.quit)
+        frame = Frame(master=master, bg=self.bg)
+        frame.pack()
+        self.menu = Menu(
+            frame, 
+            tearoff=False,
+            bg="#243347", 
+            foreground="white", 
+            activebackground=visuals['blue']['colors']['highlight'], 
+            activeforeground='White',
+            relief=FLAT,
+            font=("Bold", 11)
+            )
+        self.menu.add_command(label="🔄 Refresh", command="")
+        self.menu.add_command(label="⚙ Settings", command=self.settingsCallback)
+        self.menu.add_command(label="🐙 About", command=self.aboutCallback)
+        self.menu.add_command(label="🛑 Exit", command=master.quit)
         return True
-
+    
+    def settingsCallback(self):
+        url = "settings.json"
+        webbrowser.open(url,new = 0, autoraise = True)
+    
+    def aboutCallback(self):
+        url = "https://dnamcknight.github.io/CloudflareWarpGUI/"
+        webbrowser.open(url,new = 0, autoraise = True)
+    
+    def menuCallback(self, coords):
+        self.menu.tk_popup(x=coords.x_root+1, y=coords.y_root+1)
+    
     # This contains the Text and button all put together in a frame.
     def enableFrame(self, master):
         """Enable frame that has text and a button attached to it"""
@@ -206,6 +226,7 @@ class App:
     def startup(self):
         """This is responsible to check if the system meets the requirements to run the program"""
         self.introMessage()
+        root.bind('<Button-3>', self.menuCallback)
         if sys.version_info.major < 3:
             messagebox.showerror("Error", "The script requires python 3 or above!")
             sys.exit()
@@ -223,11 +244,11 @@ class App:
                 else:
                     messagebox.showerror("Error", "Warp is required, please install Cloudflare Warp from https://cloudflarewarp.com and try again.")
                 sys.exit()
-            # print(sys.platform)
-            # sys.exit()
+        
         elif (popen("systemctl is-active  warp-svc").read()).rstrip() == "inactive":
             messagebox.showerror("Error", "Start daemon from CLI with\n'sudo systemctl start warp-svc'\nand ensure registration has run first.")
             sys.exit()
+        
 
     def on_exit(self):
         """On exit this function is run to kill all the processes."""
