@@ -1,5 +1,4 @@
 # CloudflareWarpGUI
-[![CloudflareWarpGUI](https://wakatime.com/badge/user/fb640bef-8826-45d4-89a9-dc6e12cf9ebd/project/862a461a-4cb7-45b6-bbad-fa88e1d84a88.svg)](https://wakatime.com/badge/user/fb640bef-8826-45d4-89a9-dc6e12cf9ebd/project/862a461a-4cb7-45b6-bbad-fa88e1d84a88)
 
 ## Table of Content
 - [What is this?](#what-is-this)
@@ -45,3 +44,7 @@ Make sure you meet the [requirements](#requirements) and download the program fr
 
 ## Note
 If you want to move the script to some other place make sure to update the path location in `launcher`
+
+Time I spent on this project so far ↙️
+
+[![CloudflareWarpGUI](https://wakatime.com/badge/user/fb640bef-8826-45d4-89a9-dc6e12cf9ebd/project/862a461a-4cb7-45b6-bbad-fa88e1d84a88.svg)](https://wakatime.com/badge/user/fb640bef-8826-45d4-89a9-dc6e12cf9ebd/project/862a461a-4cb7-45b6-bbad-fa88e1d84a88)
