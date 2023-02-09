@@ -41,10 +41,9 @@ class App:
         self.bg = visuals["colors"]["bg"]
         self.startup()
         self.status = StringVar()
-        self.taskbarText = StringVar()
-        self.taskbarCheck = None
+        self.taskbarCheck = True
         self.taskbar()
-        self.statusCheck()
+        Thread(target=self.statusCheck).start()
         self.enableFrame(master)
         self.disableFrame(master)
         self.checkboxFrame(master)
@@ -144,7 +143,7 @@ class App:
         """checkbox frame  for the checkbox"""
         frame = Frame(master=master, bg=self.bg)
         frame.pack(pady=10)
-        checkButton = Checkbutton(
+        self.checkButton = Checkbutton(
             frame,
             textvariable=self.taskbarText,
             command=lambda: Thread(target=self.taskbar).start(),
@@ -155,7 +154,7 @@ class App:
             activeforeground="white",
             foreground="grey",
         )
-        checkButton.pack()
+        self.checkButton.pack()
         return True
 
     def statusFrame(self, master):
@@ -185,6 +184,7 @@ class App:
         """Enables/disables the taskbar icon on Windows and Linux"""
         if self.taskbarCheck == False:
             self.taskbarText.set("Disable warp taskbar icon")
+            self.checkButton.select()
             self.taskbarCheck = True
             if sys.platform == "win32":
                 popen("C:/Program Files/Cloudflare/Cloudflare WARP/Cloudflare WARP.exe").read()
@@ -216,7 +216,6 @@ class App:
 
     def introMessage(self):
         """This is where the first time intro message is generated"""
-        #TODO If there is no settings file, create one and save the settings within it.
         if not exists(f'{path}config.json'):
             settings.startup()
         with open(f"{path}config.json", "r") as f:
@@ -225,17 +224,20 @@ class App:
                 messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving a star ⭐")
             with open(f"{path}config.json", "w") as write:
                 data["startupMsg"] = False
-                json.dump(data, write)
+                json.dump(data, write, indent=2)
 
     def startup(self):
         """This is responsible to check if the system meets the requirements to run the program"""
         self.introMessage()
+        self.taskbarText = StringVar()
         root.bind('<Button-3>', self.menuCallback)
         if sys.version_info.major < 3:
             messagebox.showerror("Error", "The script requires python 3 or above!")
             sys.exit()
         if sys.platform != "linux":
-            messagebox.showinfo("Warning", "Some features are not yet compatible with windows!")
+            msg = messagebox.askyesno("Warning", "Some features are not yet compatible with windows!")
+            if msg:
+                settings.change("winWarningMsg", False)
             command = popen("warp-cli status").read()            
             temp = Label(root, text="Dowloading cloudflare warp please wait...", bg=self.bg, foreground="white")
             if not command:
@@ -253,10 +255,20 @@ class App:
             messagebox.showerror("Error", "Start daemon from CLI with\n'sudo systemctl start warp-svc'\nand ensure registration has run first.")
             sys.exit()
         
-
+        if settings.check("autoConnect") == True:
+            popen("warp-cli connect").read()
+        if settings.check("defaultTaskbar") == True:
+            self.taskbarText = StringVar()
+            self.taskbarCheck = False
+            Thread(target=self.taskbar).start()
+            
+        
+        
     def on_exit(self):
         """On exit this function is run to kill all the processes."""
-        popen("warp-cli disconnect").read()
+        if settings.check('keepAlive') == False:
+            popen("warp-cli disconnect").read()
+        
         if sys.platform == "win32":
             subprocess.call('TASKKILL /F /IM "Cloudflare WARP.exe"', shell=True)
         else:
