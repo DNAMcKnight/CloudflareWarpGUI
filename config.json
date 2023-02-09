@@ -1,1 +1,7 @@
-{"startupMsg": false}
+{
+  "startupMsg": true,
+  "winWarningMsg": true,
+  "defaultTaskbar": false,
+  "autoConnect": false,
+  "keepAlive": false
+}
