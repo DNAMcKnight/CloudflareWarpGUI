@@ -1,9 +1,11 @@
 from tkinter import *
 from tkinter import messagebox
 from os import popen,path
+from os.path import exists
 from time import sleep
 from threading import Thread
-import json, sys,subprocess,webbrowser
+import json, sys,subprocess,webbrowser, settings
+
 
 # Path changes if you're using the compiled version of the app
 if getattr(sys, 'frozen', False):
@@ -70,7 +72,7 @@ class App:
         return True
     
     def settingsCallback(self):
-        url = "settings.json"
+        url = "config.json"
         webbrowser.open(url,new = 0, autoraise = True)
     
     def aboutCallback(self):
@@ -215,13 +217,15 @@ class App:
     def introMessage(self):
         """This is where the first time intro message is generated"""
         #TODO If there is no settings file, create one and save the settings within it.
-        with open(f"{path}settings.json", "r") as f:
-            settings = json.load(f)
-            if settings["startupMsg"]:
+        if not exists(f'{path}config.json'):
+            settings.startup()
+        with open(f"{path}config.json", "r") as f:
+            data = json.load(f)
+            if data["startupMsg"]:
                 messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving a star ⭐")
-            with open(f"{path}settings.json", "w") as write:
-                settings["startupMsg"] = False
-                json.dump(settings, write)
+            with open(f"{path}config.json", "w") as write:
+                data["startupMsg"] = False
+                json.dump(data, write)
 
     def startup(self):
         """This is responsible to check if the system meets the requirements to run the program"""
