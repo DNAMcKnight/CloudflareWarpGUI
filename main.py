@@ -57,17 +57,17 @@ class App:
         self.menu = Menu(
             frame, 
             tearoff=False,
-            bg="#243347", 
-            foreground="white", 
+            # bg="#243347", 
+            # foreground="white", 
             activebackground=visuals['blue']['colors']['highlight'], 
             activeforeground='White',
             relief=FLAT,
-            font=("Bold", 11)
+            font=("constanb", 11)
             )
         self.menu.add_command(label="🔄 Refresh", command="")
         self.menu.add_command(label="⚙ Settings", command=self.settingsCallback)
         self.menu.add_command(label="🐙 About", command=self.aboutCallback)
-        self.menu.add_command(label="🛑 Exit", command=master.quit)
+        self.menu.add_command(label="🛑 Exit", command=self.on_exit)
         return True
     
     def settingsCallback(self):
@@ -235,9 +235,10 @@ class App:
             messagebox.showerror("Error", "The script requires python 3 or above!")
             sys.exit()
         if sys.platform != "linux":
-            msg = messagebox.askyesno("Warning", "Some features are not yet compatible with windows!")
-            if msg:
-                settings.change("winWarningMsg", False)
+            if settings.check('winWarningMsg'):
+                msg = messagebox.askokcancel("Warning", "Some features are not yet compatible with windows!")
+                if msg:
+                    settings.change("winWarningMsg", False)
             command = popen("warp-cli status").read()            
             temp = Label(root, text="Dowloading cloudflare warp please wait...", bg=self.bg, foreground="white")
             if not command:
@@ -274,7 +275,7 @@ class App:
         else:
             popen("pkill -f warp-taskbar").read()
 
-        root.quit()
+        sys.exit()
 
 
 if __name__ == "__main__":
