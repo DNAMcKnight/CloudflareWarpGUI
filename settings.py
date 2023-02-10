@@ -1,11 +1,6 @@
 from pathlib import Path
 import json, sys
 
-if getattr(sys, 'frozen', False):
-    path = f"{sys._MEIPASS}/"
-else:
-    path = ""
-
 def startup():
     default = {
     "startupMsg": True,
@@ -14,7 +9,7 @@ def startup():
     "autoConnect": False,
     "keepAlive": False
 }
-    settings = Path(f'{path}config.json')
+    settings = Path(f'config.json')
     if settings.exists():
         return True
     with open('config.json', 'w') as f:
@@ -22,16 +17,16 @@ def startup():
     return False
 
 def change(key, value):
-    with open(f"{path}config.json", "r") as f:
+    with open(f"config.json", "r") as f:
         data = json.load(f)
-        with open(f"{path}config.json", "w") as write:
+        with open(f"config.json", "w") as write:
             data[key] = value
             json.dump(data, write, indent=2)
             return True
     return False
 
 def check(key):
-    with open(f"{path}config.json", "r") as f:
+    with open(f"config.json", "r") as f:
         data = json.load(f)
         if key in data:
             return data[key]
