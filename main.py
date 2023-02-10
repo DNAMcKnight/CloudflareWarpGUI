@@ -71,7 +71,7 @@ class App:
         return True
     
     def settingsCallback(self):
-        url = "config.json"
+        url = "./config.json"
         webbrowser.open(url,new = 0, autoraise = True)
     
     def aboutCallback(self):
@@ -216,13 +216,13 @@ class App:
 
     def introMessage(self):
         """This is where the first time intro message is generated"""
-        if not exists(f'{path}config.json'):
+        if not exists(f'config.json'):
             settings.startup()
-        with open(f"{path}config.json", "r") as f:
+        with open(f"config.json", "r") as f:
             data = json.load(f)
             if data["startupMsg"]:
                 messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving a star ⭐")
-            with open(f"{path}config.json", "w") as write:
+            with open(f"config.json", "w") as write:
                 data["startupMsg"] = False
                 json.dump(data, write, indent=2)
 
