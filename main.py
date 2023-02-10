@@ -71,7 +71,7 @@ class App:
         return True
     
     def settingsCallback(self):
-        url = "./config.json"
+        url = "config.json"
         webbrowser.open(url,new = 0, autoraise = True)
     
     def aboutCallback(self):
@@ -244,7 +244,8 @@ class App:
             if not command:
                 temp.pack()
                 warp = messagebox.askyesno("Warning", "Warp is required to run this program, would you like to install it?")
-                popen("winget install -e --id Cloudflare.Warp").read() if warp else ""
+                url = "https://cloudflarewarp.com"
+                webbrowser.open(url,new = 0, autoraise = True) if warp else ""
                 temp.destroy()
                 if warp:
                     messagebox.showinfo("Success!","Warp has been installed successfully! Please relaunch the app to use it.")
