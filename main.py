@@ -15,7 +15,7 @@ else:
     
 root = Tk()
 rootMenu = Menu(root)
-root.title("Cloudflare WARP")
+root.title("Cloudflare WARP v1.1.0")
 width, height = 470, 200
 widthCenter = int(root.winfo_screenwidth() / 2 - width / 2)
 heightCenter = int(root.winfo_screenheight() / 2 - height / 2)
@@ -62,10 +62,10 @@ class App:
             activebackground=visuals['blue']['colors']['highlight'], 
             activeforeground='White',
             relief=FLAT,
-            font=("constanb", 11)
+            font=("Arial", 11)
             )
         self.menu.add_command(label="🔄 Refresh", command="")
-        self.menu.add_command(label="⚙ Settings", command=self.settingsCallback)
+        self.menu.add_command(label="⚙Settings" if sys.platform != "linux" else "⚙ Settings", command=self.settingsCallback)
         self.menu.add_command(label="🐙 About", command=self.aboutCallback)
         self.menu.add_command(label="🛑 Exit", command=self.on_exit)
         return True
@@ -248,7 +248,7 @@ class App:
                 webbrowser.open(url,new = 0, autoraise = True) if warp else ""
                 temp.destroy()
                 if warp:
-                    messagebox.showinfo("Success!","Warp has been installed successfully! Please relaunch the app to use it.")
+                    messagebox.showinfo("Success!","After installing warp please relaunch the app to use it.")
                 else:
                     messagebox.showerror("Error", "Warp is required, please install Cloudflare Warp from https://cloudflarewarp.com and try again.")
                 sys.exit()
