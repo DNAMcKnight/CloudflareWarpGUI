@@ -1,0 +1,4 @@
+theme: jekll-theme-cayman
+title: [Cloudflare Warp GUI]
+description: [A Python GUI originally made just for Linux users to use Cloudflare WARP using a GUI since Linux only had a CLI]
+show_downloads: [true]
