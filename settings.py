@@ -1,14 +1,14 @@
 from pathlib import Path
-import json, sys
+import json, sys, traceback
 
-def startup():
-    default = {
+default = {
     "startupMsg": True,
     "winWarningMsg": True,
     "defaultTaskbar": False,
     "autoConnect": False,
     "keepAlive": False
 }
+def startup() -> bool:
     settings = Path(f'config.json')
     if settings.exists():
         return True
@@ -16,7 +16,7 @@ def startup():
         json.dump(default, f, indent=2)
     return False
 
-def change(key, value):
+def change(key: str, value: bool) -> bool:
     with open(f"config.json", "r") as f:
         data = json.load(f)
         with open(f"config.json", "w") as write:
@@ -25,9 +25,20 @@ def change(key, value):
             return True
     return False
 
-def check(key):
-    with open(f"config.json", "r") as f:
-        data = json.load(f)
-        if key in data:
-            return data[key]
-        return None
+def check(key: str) -> bool:
+    try:
+        with open(f"config.json", "r") as f:
+            data = json.load(f)
+            if key in data:
+                if data[key] != True or data[key] != False:
+                    return default[key]
+                return data[key]
+            return None
+    except json.decoder.JSONDecodeError:
+        print("decode error")
+        return default[key]
+        
+        
+        
+    
+print(check('startupMsg'))
