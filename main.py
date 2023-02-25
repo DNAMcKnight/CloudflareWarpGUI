@@ -235,7 +235,7 @@ class App:
             messagebox.showerror("Error", "The script requires python 3 or above!")
             sys.exit()
         if sys.platform != "linux":
-            if settings.check('winWarningMsg'):
+            if settings.check('winWarningMsg') is not None:
                 msg = messagebox.askokcancel("Warning", "Some features are not yet compatible with windows!")
                 if msg:
                     settings.change("winWarningMsg", False)
