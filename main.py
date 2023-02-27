@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
-from os import popen,path
+from os import popen,path, remove
 from os.path import exists
 from time import sleep
 from threading import Thread
@@ -221,7 +221,7 @@ class App:
         with open(f"config.json", "r") as f:
             data = json.load(f)
             if data["startupMsg"]:
-                messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving a star ⭐")
+                messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving this project a star at https://github.com/DNAMcKnight/CloudflareWarpGUI")
             with open(f"config.json", "w") as write:
                 data["startupMsg"] = False
                 json.dump(data, write, indent=2)
@@ -235,7 +235,8 @@ class App:
             messagebox.showerror("Error", "The script requires python 3 or above!")
             sys.exit()
         if sys.platform != "linux":
-            if settings.check('winWarningMsg') is not None:
+            print(settings.check('winWarningMsg'))
+            if settings.check('winWarningMsg'):
                 msg = messagebox.askokcancel("Warning", "Some features are not yet compatible with windows!")
                 if msg:
                     settings.change("winWarningMsg", False)
@@ -280,6 +281,13 @@ class App:
 
 
 if __name__ == "__main__":
-    app = App(root)
-    root.protocol("WM_DELETE_WINDOW", app.on_exit)
-    root.mainloop()
+    try:
+        app = App(root)
+        root.protocol("WM_DELETE_WINDOW", app.on_exit)
+        root.mainloop()
+    except json.decoder.JSONDecodeError:
+        remove("config.json")
+        messagebox.showinfo("Oops Settings error!","Settings were reset to default due to an error.")
+        app = App(root)
+        root.protocol("WM_DELETE_WINDOW", app.on_exit)
+        root.mainloop()
