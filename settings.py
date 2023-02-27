@@ -30,7 +30,8 @@ def check(key: str) -> bool:
         with open(f"config.json", "r") as f:
             data = json.load(f)
             if key in data:
-                if data[key] != True or data[key] != False:
+                if data[key] != True and data[key] != False:
+                    print("returning default")
                     return default[key]
                 return data[key]
             return None
