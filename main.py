@@ -216,13 +216,13 @@ class App:
 
     def introMessage(self):
         """This is where the first time intro message is generated"""
-        if not exists(f'config.json'):
+        if not exists('config.json'):
             settings.startup()
-        with open(f"config.json", "r") as f:
+        with open("config.json", "r") as f:
             data = json.load(f)
             if data["startupMsg"]:
                 messagebox.showinfo("Thank You!", "Thank you for using my App, please support me by giving this project a star at https://github.com/DNAMcKnight/CloudflareWarpGUI")
-            with open(f"config.json", "w") as write:
+            with open("config.json", "w") as write:
                 data["startupMsg"] = False
                 json.dump(data, write, indent=2)
 
@@ -238,7 +238,7 @@ class App:
             print(settings.check('winWarningMsg'))
             if settings.check('winWarningMsg'):
                 msg = messagebox.askokcancel("Warning", "Some features are not yet compatible with windows!")
-                if msg:
+                if msg is True:
                     settings.change("winWarningMsg", False)
             command = popen("warp-cli status").read()            
             temp = Label(root, text="Dowloading cloudflare warp please wait...", bg=self.bg, foreground="white")
