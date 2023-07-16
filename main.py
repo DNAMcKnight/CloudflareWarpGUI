@@ -28,6 +28,7 @@ visuals = {
     "red": {"buttons": {"normal": PhotoImage(file=f"{path}assets/red.png"), "highlight": PhotoImage(file=f"{path}assets/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
     "colors": {"bg": "#1E1E1E"},
     "images": {"logo": {"white": PhotoImage(file=f"{path}assets/white.png"), "orange": PhotoImage(file=f"{path}assets/orange.png")}},
+    "handburger": {"buttons": {"normal": PhotoImage(file=f"{path}assets/menuRed.png"), "highlight": PhotoImage(file=f"{path}assets/menuBlue.png")}}
 }
 
 root.configure(bg=visuals["colors"]["bg"])
@@ -39,17 +40,39 @@ root.iconphoto(True, visuals["images"]["logo"]["white"])
 class App:
     def __init__(self, master):
         self.bg = visuals["colors"]["bg"]
+        self.clear = False
         self.startup()
         self.status = StringVar()
         self.taskbarCheck = True
         self.taskbar()
         Thread(target=self.statusCheck).start()
+        self.handburgerMenu(master)
         self.enableFrame(master)
         self.disableFrame(master)
         self.checkboxFrame(master)
         self.statusFrame(master)
         self.contextMenu(master)
     # The default menu is left unused, we might make one in the near future.
+    def handburgerMenu(self, master):
+        """handburger menu instead fo default menu"""
+        frame = Frame(master=master, bg=self.bg)
+        frame.pack(padx=20, pady=5)
+        self.burgerLabel = self.buttonCreate(master=frame, bg=self.bg, type=visuals["handburger"], callback=self.handburgerCallback, text="")
+        self.burgerLabel.grid(row=0, column=0)
+        Label(frame, bg=self.bg, foreground="white", width=60).grid(row=0, column=1)
+        return True
+    
+    def handburgerCallback(self):
+        if self.clear == False:
+            for widget in root.winfo_children():
+                widget.destroy()
+            self.handburgerMenu(root)
+            self.clear = True 
+        else:
+            for widget in root.winfo_children():
+                widget.destroy()
+            self.__init__(root)
+
     def contextMenu(self, master):
         """creates a menu"""
         frame = Frame(master=master, bg=self.bg)
@@ -86,7 +109,7 @@ class App:
         """Enable frame that has text and a button attached to it"""
         frame = Frame(master=master, bg=self.bg)
         frame.pack(pady=5)
-        spacer = Frame(frame, height= 10, bg=self.bg).grid(row=0,pady=10)
+        # spacer = Frame(frame, height= 10, bg=self.bg).grid(row=0,pady=10)
         self.enableLabel = Label(frame, text="Enable Cloudflare WARP", bg=self.bg, foreground="white", width=25)
         self.enableLabel.grid(row=1, column=0)
         self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.enableCallback, text="Enable")
@@ -108,22 +131,27 @@ class App:
     def buttonCreate(self, master, bg, type, callback, text):
         """generates a button using an image"""
         frame = Frame(master=master, bg=bg)
+        if not text:
+            width = 32
+        else:
+            width = 75
         button = Button(
             frame,
             image=type["buttons"]["normal"],
             borderwidth=0,
             text=text,
             command=lambda: Thread(target=callback).start(),
-            width=75,
+            width=width,
             bg=bg,
             activebackground=bg,
             highlightthickness=0,
             foreground="white",
         )
         button.grid(row=0, column=0)
-        buttonText = Label(frame, text=text, bg=type["colors"]["normal"], foreground="white")
-        buttonText.grid(row=0, column=0)
-        buttonText.bind("<Button-1>", lambda event: button.invoke())
+        if text:
+            buttonText = Label(frame, text=text, bg=type["colors"]["normal"], foreground="white")
+            buttonText.grid(row=0, column=0)
+            buttonText.bind("<Button-1>", lambda event: button.invoke())
         frame.bind("<Enter>", lambda event: self.buttonHighlight(frame, "Enter", type))
         frame.bind("<Leave>", lambda event: self.buttonHighlight(frame, "Leave", type))
         return frame
@@ -132,10 +160,12 @@ class App:
         """Changes the highlight depending on the backgound color"""
         if state == "Enter":
             frame.winfo_children()[0].config(image=data["buttons"]["highlight"])
-            frame.winfo_children()[1].config(bg=data["colors"]["highlight"])
+            if "colors" in data:
+                frame.winfo_children()[1].config(bg=data["colors"]["highlight"])
         else:
             frame.winfo_children()[0].config(image=data["buttons"]["normal"])
-            frame.winfo_children()[1].config(bg=data["colors"]["normal"])
+            if "colors" in data:
+                frame.winfo_children()[1].config(bg=data["colors"]["normal"])
         return True
 
 
