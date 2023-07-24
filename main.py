@@ -33,7 +33,8 @@ visuals = {
 
 root.configure(bg=visuals["colors"]["bg"])
 root.iconphoto(True, visuals["images"]["logo"]["white"])
-
+TASKBAR_STATE = False
+ONE_TIME_CHECK = False
 # Label(root, image=bgImage).place(x=0, y=0, relheight=1, relwidth=1)
 
 
@@ -44,13 +45,13 @@ class App:
         self.startup()
         self.status = StringVar()
         self.taskbarCheck = True
-        self.taskbar()
         Thread(target=self.statusCheck).start()
         self.handburgerMenu(master)
         self.enableFrame(master)
         self.disableFrame(master)
         self.checkboxFrame(master)
         self.statusFrame(master)
+        self.taskbar(startup=True)
         self.contextMenu(master)
     # The default menu is left unused, we might make one in the near future.
     def handburgerMenu(self, master):
@@ -69,9 +70,7 @@ class App:
             self.handburgerMenu(root)
             self.clear = True 
         else:
-            for widget in root.winfo_children():
-                widget.destroy()
-            self.__init__(root)
+            self.refreshCallback()
 
     def contextMenu(self, master):
         """creates a menu"""
@@ -87,11 +86,18 @@ class App:
             relief=FLAT,
             font=("Arial", 11)
             )
-        self.menu.add_command(label="🔄 Refresh", command="")
+        self.menu.add_command(label="🔄 Refresh", command=self.refreshCallback)
         self.menu.add_command(label="⚙Settings" if sys.platform != "linux" else "⚙ Settings", command=self.settingsCallback)
         self.menu.add_command(label="🐙 About", command=self.aboutCallback)
         self.menu.add_command(label="🛑 Exit", command=self.on_exit)
         return True
+    
+    def refreshCallback(self):
+        for widget in root.winfo_children():
+            widget.destroy()
+        global TASKBAR_STATE
+        TASKBAR_STATE = self.taskbarCheck
+        self.__init__(root)
     
     def settingsCallback(self):
         url = "config.json"
@@ -185,6 +191,7 @@ class App:
             foreground="grey",
         )
         self.checkButton.pack()
+        self.taskbarText.set("Disable warp taskbar icon")
         return True
 
     def statusFrame(self, master):
@@ -210,16 +217,27 @@ class App:
         root.iconphoto(True, visuals["images"]["logo"]["white"])
         return True
 
-    def taskbar(self):
+    def taskbar(self, startup = False):
         """Enables/disables the taskbar icon on Windows and Linux"""
+        global TASKBAR_STATE, ONE_TIME_CHECK
+        if settings.check("defaultTaskbar") and not ONE_TIME_CHECK:
+            self.taskbarCheck = False
+            ONETIMECHECK = True
+        elif TASKBAR_STATE and startup:
+            self.taskbarCheck = False
+            if sys.platform == "win32":
+                subprocess.call('TASKKILL /F /IM "Cloudflare WARP.exe"', shell=True)
+            else:
+                popen("pkill -f warp-taskbar").read()
+                       
         if self.taskbarCheck == False:
             self.taskbarText.set("Disable warp taskbar icon")
             self.checkButton.select()
             self.taskbarCheck = True
             if sys.platform == "win32":
-                popen("C:/Program Files/Cloudflare/Cloudflare WARP/Cloudflare WARP.exe").read()
+                Thread(target=popen("C:/Program Files/Cloudflare/Cloudflare WARP/Cloudflare WARP.exe").read).start()
             else:
-                popen("warp-taskbar").read()
+                Thread(target=popen("warp-taskbar").read).start()
         else:
             self.taskbarText.set("Enable warp taskbar icon")
             self.taskbarCheck = False
@@ -227,7 +245,7 @@ class App:
                 subprocess.call('TASKKILL /F /IM "Cloudflare WARP.exe"', shell=True)
             else:
                 popen("pkill -f warp-taskbar").read()
-
+        print(f"taskbar state {TASKBAR_STATE}")
     def statusCheck(self):
         """This does the connection checks and updates taskbar"""
         command = popen("warp-cli status").read()            
@@ -290,10 +308,6 @@ class App:
         
         if settings.check("autoConnect") == True:
             popen("warp-cli connect").read()
-        if settings.check("defaultTaskbar") == True:
-            self.taskbarText = StringVar()
-            self.taskbarCheck = False
-            Thread(target=self.taskbar).start()
             
         
         
