@@ -27,12 +27,16 @@ visuals = {
     "blue": {"buttons": {"normal": PhotoImage(file=f"{path}assets/blue.png"), "highlight": PhotoImage(file=f"{path}assets/blue_highlight.png")}, "colors": {"normal": "#0466C8", "highlight": "#0074FD"}},
     "red": {"buttons": {"normal": PhotoImage(file=f"{path}assets/red.png"), "highlight": PhotoImage(file=f"{path}assets/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
     "colors": {"bg": "#1E1E1E"},
-    "images": {"logo": {"white": PhotoImage(file=f"{path}assets/white.png"), "orange": PhotoImage(file=f"{path}assets/orange.png")}},
-    "handburger": {"buttons": {"normal": PhotoImage(file=f"{path}assets/menuRed.png"), "highlight": PhotoImage(file=f"{path}assets/menuBlue.png")}}
+    "images": {"logo": {"white": PhotoImage(file=f"{path}assets/white.png"), "black": PhotoImage(file=f"{path}assets/black.png"), "orange": PhotoImage(file=f"{path}assets/orange.png")}},
+    "handburger": {"buttons": {"normal": PhotoImage(file=f"{path}assets/menuRed.png"), "highlight": PhotoImage(file=f"{path}assets/menuBlue.png")}},
+    "background": PhotoImage(file=f"{path}assets/Untitled-1.png")
 }
 
 root.configure(bg=visuals["colors"]["bg"])
-root.iconphoto(True, visuals["images"]["logo"]["white"])
+if sys.platform == "win32":
+    root.iconphoto(True, visuals["images"]["logo"]["black"])
+else:
+    root.iconphoto(True, visuals["images"]["logo"]["white"])
 TASKBAR_STATE = False
 ONE_TIME_CHECK = False
 # Label(root, image=bgImage).place(x=0, y=0, relheight=1, relwidth=1)
@@ -54,20 +58,32 @@ class App:
         self.taskbar(startup=True)
         self.contextMenu(master)
     # The default menu is left unused, we might make one in the near future.
-    def handburgerMenu(self, master):
+    def handburgerMenu(self, master, options= False):
         """handburger menu instead fo default menu"""
         frame = Frame(master=master, bg=self.bg)
-        frame.pack(padx=20, pady=5)
+        frame.pack(padx=20, pady=0)
+        text = "MENU" if options else ""
         self.burgerLabel = self.buttonCreate(master=frame, bg=self.bg, type=visuals["handburger"], callback=self.handburgerCallback, text="")
         self.burgerLabel.grid(row=0, column=0)
-        Label(frame, bg=self.bg, foreground="white", width=60).grid(row=0, column=1)
+        Label(frame, bg=self.bg, foreground="white",width=30, text=text,font=("Arial", 18)).grid(row=0, column=1)
+        Label(frame, bg=self.bg, foreground="white", width=60).grid(row=0, column=2)
         return True
     
+    def handburgerScreen(self, master):
+        frame = Frame(master=master, bg= self.bg)
+        frame.pack()
+        imageLabel = Label(frame, image=visuals["background"])
+        imageLabel.pack()
+        return True
+        
+        
     def handburgerCallback(self):
         if self.clear == False:
             for widget in root.winfo_children():
                 widget.destroy()
-            self.handburgerMenu(root)
+            self.handburgerMenu(root, options=True)
+            self.handburgerScreen(root)
+            self.contextMenu(root)
             self.clear = True 
         else:
             self.refreshCallback()
@@ -214,7 +230,10 @@ class App:
         """Callback for disable button and changes the icon"""
         popen("warp-cli disconnect").read()
         self.statusCheck()
-        root.iconphoto(True, visuals["images"]["logo"]["white"])
+        if sys.platform == "win32":
+            root.iconphoto(True, visuals["images"]["logo"]["black"])
+        else:
+            root.iconphoto(True, visuals["images"]["logo"]["white"])
         return True
 
     def taskbar(self, startup = False):
@@ -222,7 +241,7 @@ class App:
         global TASKBAR_STATE, ONE_TIME_CHECK
         if settings.check("defaultTaskbar") and not ONE_TIME_CHECK:
             self.taskbarCheck = False
-            ONETIMECHECK = True
+            ONE_TIME_CHECK = True
         elif TASKBAR_STATE and startup:
             self.taskbarCheck = False
             if sys.platform == "win32":
