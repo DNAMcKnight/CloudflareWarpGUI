@@ -4,6 +4,7 @@ from os import popen,path, remove
 from os.path import exists
 from time import sleep
 from threading import Thread
+from popup import Popup
 import json, sys,subprocess,webbrowser, settings
 
 
@@ -28,8 +29,7 @@ visuals = {
     "red": {"buttons": {"normal": PhotoImage(file=f"{path}assets/red.png"), "highlight": PhotoImage(file=f"{path}assets/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
     "colors": {"bg": "#1E1E1E"},
     "images": {"logo": {"white": PhotoImage(file=f"{path}assets/white.png"), "black": PhotoImage(file=f"{path}assets/black.png"), "orange": PhotoImage(file=f"{path}assets/orange.png")}},
-    "handburger": {"buttons": {"normal": PhotoImage(file=f"{path}assets/menuRed.png"), "highlight": PhotoImage(file=f"{path}assets/menuBlue.png")}},
-    "background": PhotoImage(file=f"{path}assets/Untitled-1.png")
+    "handburger": {"buttons": {"normal": PhotoImage(file=f"{path}assets/menuRed.png"), "highlight": PhotoImage(file=f"{path}assets/menuBlue.png")}}
 }
 
 root.configure(bg=visuals["colors"]["bg"])
@@ -62,20 +62,33 @@ class App:
         """handburger menu instead fo default menu"""
         frame = Frame(master=master, bg=self.bg)
         frame.pack(padx=20, pady=0)
-        text = "MENU" if options else ""
+        text = "" if options else ""
         self.burgerLabel = self.buttonCreate(master=frame, bg=self.bg, type=visuals["handburger"], callback=self.handburgerCallback, text="")
         self.burgerLabel.grid(row=0, column=0)
-        Label(frame, bg=self.bg, foreground="white",width=30, text=text,font=("Arial", 18)).grid(row=0, column=1)
+        Label(frame, bg=self.bg, foreground="white",width=27, text=text,font=("Arial", 18)).grid(row=0, column=1)
         Label(frame, bg=self.bg, foreground="white", width=60).grid(row=0, column=2)
         return True
     
     def handburgerScreen(self, master):
         frame = Frame(master=master, bg= self.bg)
         frame.pack()
-        imageLabel = Label(frame, image=visuals["background"])
-        imageLabel.pack()
+        settings =self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.tempCallback, text="Settings")
+        settings.grid(row=1, column=1, padx=25)
+        refresh = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.refreshCallback, text="Refresh")
+        refresh.grid(row=2, column=1, padx=25)
+        about = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.tempCallback, text="About")
+        about.grid(row=3, column=1, padx=25)
+        Popup(root=root, text= "App settings.", bind=settings)
+        Popup(root=root, text= "This will refresh the app.", bind=refresh)
+        Popup(root=root, text= "About the app", bind= about)
         return True
         
+    def aboutCallback(self):
+        pass
+    
+    def tempCallback(self):
+        print("This works")
+        pass
         
     def handburgerCallback(self):
         if self.clear == False:
@@ -265,6 +278,7 @@ class App:
             else:
                 popen("pkill -f warp-taskbar").read()
         print(f"taskbar state {TASKBAR_STATE}")
+        
     def statusCheck(self):
         """This does the connection checks and updates taskbar"""
         command = popen("warp-cli status").read()            
@@ -341,6 +355,7 @@ class App:
             popen("pkill -f warp-taskbar").read()
 
         sys.exit()
+
 
 
 if __name__ == "__main__":
