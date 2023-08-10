@@ -72,23 +72,16 @@ class App:
     def handburgerScreen(self, master):
         frame = Frame(master=master, bg= self.bg)
         frame.pack()
-        settings =self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.tempCallback, text="Settings")
+        settings =self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.settingsCallback, text="Settings")
         settings.grid(row=1, column=1, padx=25)
         refresh = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.refreshCallback, text="Refresh")
         refresh.grid(row=2, column=1, padx=25)
-        about = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.tempCallback, text="About")
+        about = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.aboutCallback, text="About")
         about.grid(row=3, column=1, padx=25)
         Popup(root=root, text= "App settings.", bind=settings)
         Popup(root=root, text= "This will refresh the app.", bind=refresh)
-        Popup(root=root, text= "About the app", bind= about)
+        Popup(root=root, text= "About the app.", bind= about)
         return True
-        
-    def aboutCallback(self):
-        pass
-    
-    def tempCallback(self):
-        print("This works")
-        pass
         
     def handburgerCallback(self):
         if self.clear == False:
