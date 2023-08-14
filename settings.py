@@ -46,11 +46,13 @@ class Settings:
 
     
 class CustomButton(Settings):
-    def __init__(self, master, bg, type, check):
+    def __init__(self, master, bg, type, key):
         self.master = master
         self.bg = bg
         self.type = type
-        self.text = "Disable" if self.check(check) == True else "Enable"
+        self.key = key
+        self.state = self.check(key)
+        self.text = "Disable" if self.state == True else "Enable"
         
     def button(self):
         frame = Frame(master=self.master, bg=self.bg)
@@ -64,7 +66,7 @@ class CustomButton(Settings):
             image=type["buttons"]["normal"],
             borderwidth=0,
             text=self.text,
-            command=lambda: Thread(target=self.buttonCallback).start(),
+            command=lambda: Thread(target=self.buttonCallback, args=(frame,)).start(),
             width=width,
             bg=self.bg,
             activebackground=self.bg,
@@ -76,15 +78,29 @@ class CustomButton(Settings):
             buttonText = Label(frame, text=self.text, bg=type["colors"]["normal"], foreground="white")
             buttonText.grid(row=0, column=0)
             buttonText.bind("<Button-1>", lambda event: self.button.invoke())
-        frame.bind("<Enter>", lambda event: self.buttonHighlight(frame, "Enter", type))
-        frame.bind("<Leave>", lambda event: self.buttonHighlight(frame, "Leave", type))
+        frame.bind("<Enter>", lambda event: self.buttonHighlight(frame, "Enter", self.type))
+        frame.bind("<Leave>", lambda event: self.buttonHighlight(frame, "Leave", self.type))
         return frame
         
-    def buttonCallback(self):
-        pass
+    def buttonCallback(self, frame):
+        self.change(self.key, value=not self.state)
+        self.state = self.check(self.key)
+        print(frame.winfo_children())
+        if self.state:
+            frame.winfo_children()[0].config(image=self.type['red']["buttons"]["normal"])
+            frame.winfo_children()[1].config(bg=self.type['red']["colors"]["normal"], text="Disable")
+            return
+        else:
+            frame.winfo_children()[0].config(image=self.type['blue']["buttons"]["normal"])
+            frame.winfo_children()[1].config(bg=self.type['blue']["colors"]["normal"], text="Enable")
+            return
     
     def buttonHighlight(self, frame, state, data):
         """Changes the highlight depending on the backgound color"""
+        if self.state:
+            data = data['red']
+        else:
+            data = data['blue']
         if state == "Enter":
             frame.winfo_children()[0].config(image=data["buttons"]["highlight"])
             if "colors" in data:
@@ -94,3 +110,4 @@ class CustomButton(Settings):
             if "colors" in data:
                 frame.winfo_children()[1].config(bg=data["colors"]["normal"])
         return True
+    
