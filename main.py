@@ -17,11 +17,11 @@ else:
     
 root = Tk()
 rootMenu = Menu(root)
-root.title("Cloudflare WARP v1.1.0")
-width, height = 470, 220
+root.title("Cloudflare WARP v1.2.0")
+width, height = 470, 200
 widthCenter = int(root.winfo_screenwidth() / 2 - width / 2)
 heightCenter = int(root.winfo_screenheight() / 2 - height / 2)
-root.geometry(f"470x220+{widthCenter}+{heightCenter}")
+root.geometry(f"{str(width)}x{str(height)}+{widthCenter}+{heightCenter}")
 root.resizable(False, False)
 
 # To easily use colors and images together this little dict does the job.
@@ -44,10 +44,10 @@ ONE_TIME_CHECK = False
 
 
 class App:
-    def __init__(self, master):
+    def __init__(self, master, refresh):
         self.bg = visuals["colors"]["bg"]
         self.clear = False
-        self.startup()
+        self.startup(refresh)
         self.status = StringVar()
         self.taskbarCheck = True
         Thread(target=self.statusCheck).start()
@@ -68,6 +68,7 @@ class App:
         self.burgerLabel.grid(row=0, column=0)
         Label(frame, bg=self.bg, foreground="white",width=27, text=text,font=("Arial", 18)).grid(row=0, column=1)
         Label(frame, bg=self.bg, foreground="white", width=60).grid(row=0, column=2)
+        root.geometry(f"{str(width)}x{str(height)}")
         return frame
     
     def handburgerScreen(self, master):
@@ -120,7 +121,7 @@ class App:
             widget.destroy()
         global TASKBAR_STATE
         TASKBAR_STATE = self.taskbarCheck
-        self.__init__(root)
+        self.__init__(root, refresh=True)
     
     def settingsCallback(self):
         # url = "config.json"
@@ -131,35 +132,34 @@ class App:
         self.settingsScreen(root)
     
     def settingsScreen(self, master):
+        root.geometry(f"{str(width)}x{str(230)}")
         frame = Frame(master=master, bg=self.bg)
         frame.pack()
         self.startupMsg = Label(frame, text="First Time Startup Message", bg=self.bg, foreground="white", width=25)
         self.startupMsg.grid(row=1, column=0)
-        self.startupBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="startupMsg").button()
+        self.startupBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="startupMsg").button()
         self.startupBtn.grid(row=1, column=1, padx=25)
         
         self.winWarningMsg = Label(frame, text="Windows Warning Message", bg=self.bg, foreground="white", width=25)
         self.winWarningMsg.grid(row=2, column=0)
-        self.winWarningBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="winWarningMsg").button()
+        self.winWarningBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="winWarningMsg").button()
         self.winWarningBtn.grid(row=2, column=1, padx=25)
         
         self.defaultTaskbarMsg = Label(frame, text="Taskbar Icon on By Default", bg=self.bg, foreground="white", width=25)
         self.defaultTaskbarMsg.grid(row=3, column=0)
-        self.defaultTaskbarBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="defaultTaskbar").button()
+        self.defaultTaskbarBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="defaultTaskbar").button()
         self.defaultTaskbarBtn.grid(row=3, column=1, padx=25)
         
         self.autoConnectMsg = Label(frame, text="Auto Connect At Startup", bg=self.bg, foreground="white", width=25)
         self.autoConnectMsg.grid(row=4, column=0)
-        self.autoConnectBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="autoConnect").button()
+        self.autoConnectBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="autoConnect").button()
         self.autoConnectBtn.grid(row=4, column=1, padx=25)
         
         self.keepAliveMsg = Label(frame, text="Keep connection Alive After Closing", bg=self.bg, foreground="white", width=30)
         self.keepAliveMsg.grid(row=5, column=0)
-        self.keepAliveBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="keepAlive").button()
+        self.keepAliveBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="keepAlive").button()
         self.keepAliveBtn.grid(row=5, column=1, padx=25)
 
-    def startupBtnCallback(self, master):
-        pass
     
     def aboutCallback(self):
         url = "https://dnamcknight.github.io/CloudflareWarpGUI/"
@@ -336,9 +336,10 @@ class App:
                 data["startupMsg"] = False
                 json.dump(data, write, indent=2)
 
-    def startup(self):
+    def startup(self, refresh = False):
         """This is responsible to check if the system meets the requirements to run the program"""
-        self.introMessage()
+        if not refresh:
+            self.introMessage()
         self.taskbarText = StringVar()
         root.bind('<Button-3>', self.menuCallback)
         if sys.version_info.major < 3:
@@ -389,12 +390,12 @@ class App:
 
 if __name__ == "__main__":
     try:
-        app = App(root)
+        app = App(root, False)
         root.protocol("WM_DELETE_WINDOW", app.on_exit)
         root.mainloop()
     except json.decoder.JSONDecodeError:
         remove("config.json")
         messagebox.showinfo("Oops Settings error!","Settings were reset to default due to an error.")
-        app = App(root)
+        app = App(root, False)
         root.protocol("WM_DELETE_WINDOW", app.on_exit)
         root.mainloop()
