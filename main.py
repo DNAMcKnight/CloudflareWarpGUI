@@ -5,7 +5,8 @@ from os.path import exists
 from time import sleep
 from threading import Thread
 from popup import Popup
-import json, sys,subprocess,webbrowser, settings
+from settings import Settings, CustomButton
+import json, sys,subprocess,webbrowser
 
 
 # Path changes if you're using the compiled version of the app
@@ -17,10 +18,10 @@ else:
 root = Tk()
 rootMenu = Menu(root)
 root.title("Cloudflare WARP v1.1.0")
-width, height = 470, 200
+width, height = 470, 220
 widthCenter = int(root.winfo_screenwidth() / 2 - width / 2)
 heightCenter = int(root.winfo_screenheight() / 2 - height / 2)
-root.geometry(f"470x200+{widthCenter}+{heightCenter}")
+root.geometry(f"470x220+{widthCenter}+{heightCenter}")
 root.resizable(False, False)
 
 # To easily use colors and images together this little dict does the job.
@@ -67,7 +68,7 @@ class App:
         self.burgerLabel.grid(row=0, column=0)
         Label(frame, bg=self.bg, foreground="white",width=27, text=text,font=("Arial", 18)).grid(row=0, column=1)
         Label(frame, bg=self.bg, foreground="white", width=60).grid(row=0, column=2)
-        return True
+        return frame
     
     def handburgerScreen(self, master):
         frame = Frame(master=master, bg= self.bg)
@@ -122,8 +123,43 @@ class App:
         self.__init__(root)
     
     def settingsCallback(self):
-        url = "config.json"
-        webbrowser.open(url,new = 0, autoraise = True)
+        # url = "config.json"
+        # webbrowser.open(url,new = 0, autoraise = True)
+        for widget in root.winfo_children():
+                widget.destroy()
+        self.handburgerMenu(root, options=True)
+        self.settingsScreen(root)
+    
+    def settingsScreen(self, master):
+        frame = Frame(master=master, bg=self.bg)
+        frame.pack()
+        self.startupMsg = Label(frame, text="First Time Startup Message", bg=self.bg, foreground="white", width=25)
+        self.startupMsg.grid(row=1, column=0)
+        self.startupBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="startupMsg").button()
+        self.startupBtn.grid(row=1, column=1, padx=25)
+        
+        self.winWarningMsg = Label(frame, text="Windows Warning Message", bg=self.bg, foreground="white", width=25)
+        self.winWarningMsg.grid(row=2, column=0)
+        self.winWarningBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="winWarningMsg").button()
+        self.winWarningBtn.grid(row=2, column=1, padx=25)
+        
+        self.defaultTaskbarMsg = Label(frame, text="Taskbar Icon on By Default", bg=self.bg, foreground="white", width=25)
+        self.defaultTaskbarMsg.grid(row=3, column=0)
+        self.defaultTaskbarBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="defaultTaskbar").button()
+        self.defaultTaskbarBtn.grid(row=3, column=1, padx=25)
+        
+        self.autoConnectMsg = Label(frame, text="Auto Connect At Startup", bg=self.bg, foreground="white", width=25)
+        self.autoConnectMsg.grid(row=4, column=0)
+        self.autoConnectBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="autoConnect").button()
+        self.autoConnectBtn.grid(row=4, column=1, padx=25)
+        
+        self.keepAliveMsg = Label(frame, text="Keep connection Alive After Closing", bg=self.bg, foreground="white", width=30)
+        self.keepAliveMsg.grid(row=5, column=0)
+        self.keepAliveBtn = CustomButton(master=frame, bg=self.bg, type=visuals, check="keepAlive").button()
+        self.keepAliveBtn.grid(row=5, column=1, padx=25)
+
+    def startupBtnCallback(self, master):
+        pass
     
     def aboutCallback(self):
         url = "https://dnamcknight.github.io/CloudflareWarpGUI/"
@@ -245,7 +281,7 @@ class App:
     def taskbar(self, startup = False):
         """Enables/disables the taskbar icon on Windows and Linux"""
         global TASKBAR_STATE, ONE_TIME_CHECK
-        if settings.check("defaultTaskbar") and not ONE_TIME_CHECK:
+        if Settings().check("defaultTaskbar") and not ONE_TIME_CHECK:
             self.taskbarCheck = False
             ONE_TIME_CHECK = True
         elif TASKBAR_STATE and startup:
@@ -291,7 +327,7 @@ class App:
     def introMessage(self):
         """This is where the first time intro message is generated"""
         if not exists('config.json'):
-            settings.startup()
+            Settings().startup()
         with open("config.json", "r") as f:
             data = json.load(f)
             if data["startupMsg"]:
@@ -309,11 +345,11 @@ class App:
             messagebox.showerror("Error", "The script requires python 3 or above!")
             sys.exit()
         if sys.platform != "linux":
-            print(settings.check('winWarningMsg'))
-            if settings.check('winWarningMsg'):
+            print(Settings().check('winWarningMsg'))
+            if Settings().check('winWarningMsg'):
                 msg = messagebox.askokcancel("Warning", "Some features are not yet compatible with windows!")
                 if msg is True:
-                    settings.change("winWarningMsg", False)
+                    Settings().change("winWarningMsg", False)
             command = popen("warp-cli status").read()            
             temp = Label(root, text="Dowloading cloudflare warp please wait...", bg=self.bg, foreground="white")
             if not command:
@@ -332,14 +368,14 @@ class App:
             messagebox.showerror("Error", "Start daemon from CLI with\n'sudo systemctl start warp-svc'\nand ensure registration has run first.")
             sys.exit()
         
-        if settings.check("autoConnect") == True:
+        if Settings().check("autoConnect") == True:
             popen("warp-cli connect").read()
             
         
         
     def on_exit(self):
         """On exit this function is run to kill all the processes."""
-        if settings.check('keepAlive') == False:
+        if Settings().check('keepAlive') == False:
             popen("warp-cli disconnect").read()
         
         if sys.platform == "win32":
