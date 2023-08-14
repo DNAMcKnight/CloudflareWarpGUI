@@ -9,7 +9,7 @@ class Popup:
         self.bind(frame=bind)
     
     def on_hover(self, event):
-        self.frame.geometry("+%d+%d" % (event.x_root, event.y_root))
+        self.frame.geometry("+%d+%d" % (event.x_root + 15, event.y_root + 15))
         self.frame.overrideredirect(True)
         self.frame.deiconify()  # show the widget
 
