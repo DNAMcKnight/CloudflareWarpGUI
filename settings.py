@@ -85,7 +85,6 @@ class CustomButton(Settings):
     def buttonCallback(self, frame):
         self.change(self.key, value=not self.state)
         self.state = self.check(self.key)
-        print(frame.winfo_children())
         if self.state:
             frame.winfo_children()[0].config(image=self.type['red']["buttons"]["normal"])
             frame.winfo_children()[1].config(bg=self.type['red']["colors"]["normal"], text="Disable")
