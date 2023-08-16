@@ -29,7 +29,7 @@ visuals = {
     "blue": {"buttons": {"normal": PhotoImage(file=f"{path}assets/blue.png"), "highlight": PhotoImage(file=f"{path}assets/blue_highlight.png")}, "colors": {"normal": "#0466C8", "highlight": "#0074FD"}},
     "red": {"buttons": {"normal": PhotoImage(file=f"{path}assets/red.png"), "highlight": PhotoImage(file=f"{path}assets/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
     "colors": {"bg": "#1E1E1E"},
-    "images": {"logo": {"white": PhotoImage(file=f"{path}assets/white.png"), "black": PhotoImage(file=f"{path}assets/black.png"), "orange": PhotoImage(file=f"{path}assets/orange.png")}},
+    "images": {"logo": {"white": PhotoImage(file=f"{path}assets/white.png"), "black": PhotoImage(file=f"{path}assets/black.png"), "orange": PhotoImage(file=f"{path}assets/orange.png")},"pfp": PhotoImage(file=f"{path}assets/pfp.png")},
     "handburger": {"buttons": {"normal": PhotoImage(file=f"{path}assets/menuRed.png"), "highlight": PhotoImage(file=f"{path}assets/menuBlue.png")}}
 }
 
@@ -130,40 +130,63 @@ class App:
                 widget.destroy()
         self.handburgerMenu(root, options=True)
         self.settingsScreen(root)
-    
+        
+    def aboutCallback(self):
+        for widget in root.winfo_children():
+            widget.destroy()
+        self.handburgerMenu(root, options=True)
+        self.aboutScreen(root)
+        
+    def aboutScreen(self, master):
+        root.geometry(f"{str(width)}x{str(240)}")
+        frame = Frame(master=master, bg=self.bg)
+        frame.pack()
+        button = Button(
+            frame,
+            image=visuals["images"]["pfp"],
+            borderwidth=0,
+            command=lambda: Thread(target=self.profileFetch).start(),
+            bg=self.bg,
+            activebackground=self.bg,
+            highlightthickness=0,
+            foreground="white",
+            # height = 200, width = 200
+        )
+        button.grid(row=1, column=0)
+        Label(frame, text= "This app is an open source project created by DNAMcKnight hosted on Github. Click the link below to go to the download page or visit the website for more details.", justify=CENTER, wraplength=350, bg=self.bg, foreground="white").grid(row=2, column=0)
+        button = Frame(master=frame, bg=self.bg)
+        frame.pack()
+        self.buttonCreate(master=button, bg=self.bg, type=visuals["blue"], callback=self.releaseFetch, text="Downlaod").grid(row=0,column=0, padx=10)
+        self.buttonCreate(master=button, bg=self.bg, type=visuals["blue"], callback=self.websiteFetch, text="Website").grid(row=0,column=1)
+        button.grid(row=3,column=0, pady=10)
+        
     def settingsScreen(self, master):
         root.geometry(f"{str(width)}x{str(230)}")
         frame = Frame(master=master, bg=self.bg)
         frame.pack()
-        self.startupMsg = Label(frame, text="First Time Startup Message", bg=self.bg, foreground="white", width=25)
-        self.startupMsg.grid(row=1, column=0)
-        self.startupBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="startupMsg").button()
-        self.startupBtn.grid(row=1, column=1, padx=25)
-        
-        self.winWarningMsg = Label(frame, text="Windows Warning Message", bg=self.bg, foreground="white", width=25)
-        self.winWarningMsg.grid(row=2, column=0)
-        self.winWarningBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="winWarningMsg").button()
-        self.winWarningBtn.grid(row=2, column=1, padx=25)
-        
-        self.defaultTaskbarMsg = Label(frame, text="Taskbar Icon on By Default", bg=self.bg, foreground="white", width=25)
-        self.defaultTaskbarMsg.grid(row=3, column=0)
-        self.defaultTaskbarBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="defaultTaskbar").button()
-        self.defaultTaskbarBtn.grid(row=3, column=1, padx=25)
-        
-        self.autoConnectMsg = Label(frame, text="Auto Connect At Startup", bg=self.bg, foreground="white", width=25)
-        self.autoConnectMsg.grid(row=4, column=0)
-        self.autoConnectBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="autoConnect").button()
-        self.autoConnectBtn.grid(row=4, column=1, padx=25)
-        
-        self.keepAliveMsg = Label(frame, text="Keep connection Alive After Closing", bg=self.bg, foreground="white", width=30)
-        self.keepAliveMsg.grid(row=5, column=0)
-        self.keepAliveBtn = CustomButton(master=frame, bg=self.bg, type=visuals, key="keepAlive").button()
-        self.keepAliveBtn.grid(row=5, column=1, padx=25)
+        Label(frame, text="First Time Startup Message", bg=self.bg, foreground="white", width=25).grid(row=1, column=0)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="startupMsg").button().grid(row=1, column=1, padx=25)
+        Label(frame, text="Windows Warning Message", bg=self.bg, foreground="white", width=25).grid(row=2, column=0)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="winWarningMsg").button().grid(row=2, column=1, padx=25)
+        Label(frame, text="Taskbar Icon on By Default", bg=self.bg, foreground="white", width=25).grid(row=3, column=0)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="defaultTaskbar").button().grid(row=3, column=1, padx=25)
+        Label(frame, text="Auto Connect At Startup", bg=self.bg, foreground="white", width=25).grid(row=4, column=0)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="autoConnect").button().grid(row=4, column=1, padx=25)
+        Label(frame, text="Keep connection Alive After Closing", bg=self.bg, foreground="white", width=30).grid(row=5, column=0)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="keepAlive").button().grid(row=5, column=1, padx=25)
 
     
-    def aboutCallback(self):
+    def profileFetch(self):
+        url = "https://github.com/DNAMcKnight"
+        webbrowser.open(url, new = 0, autoraise = True)
+        
+    def releaseFetch(self):
+        url = "https://github.com/DNAMcKnight/CloudflareWarpGUI/releases/"
+        webbrowser.open(url, new = 0, autoraise = True)
+
+    def websiteFetch(self):
         url = "https://dnamcknight.github.io/CloudflareWarpGUI/"
-        webbrowser.open(url,new = 0, autoraise = True)
+        webbrowser.open(url, new = 0, autoraise = True)
     
     def menuCallback(self, coords):
         self.menu.tk_popup(x=coords.x_root+1, y=coords.y_root+1)
