@@ -141,7 +141,7 @@ class App:
         root.geometry(f"{str(width)}x{str(240)}")
         frame = Frame(master=master, bg=self.bg)
         frame.pack()
-        button = Button(
+        image = Button(
             frame,
             image=visuals["images"]["pfp"],
             borderwidth=0,
@@ -152,11 +152,13 @@ class App:
             foreground="white",
             # height = 200, width = 200
         )
-        button.grid(row=1, column=0)
+        image.grid(row=1, column=0)
+        Popup(root=root, text= "Click Me!", bind=image)
         Label(frame, text= "This app is an open source project created by DNAMcKnight hosted on Github. Click the link below to go to the download page or visit the website for more details.", justify=CENTER, wraplength=350, bg=self.bg, foreground="white").grid(row=2, column=0)
         button = Frame(master=frame, bg=self.bg)
+        
         frame.pack()
-        self.buttonCreate(master=button, bg=self.bg, type=visuals["blue"], callback=self.releaseFetch, text="Downlaod").grid(row=0,column=0, padx=10)
+        self.buttonCreate(master=button, bg=self.bg, type=visuals["blue"], callback=self.releaseFetch, text="Download").grid(row=0,column=0, padx=10)
         self.buttonCreate(master=button, bg=self.bg, type=visuals["blue"], callback=self.websiteFetch, text="Website").grid(row=0,column=1)
         button.grid(row=3,column=0, pady=10)
         
@@ -361,7 +363,7 @@ class App:
 
     def startup(self, refresh = False):
         """This is responsible to check if the system meets the requirements to run the program"""
-        if not refresh:
+        if refresh is False:
             self.introMessage()
         self.taskbarText = StringVar()
         root.bind('<Button-3>', self.menuCallback)
