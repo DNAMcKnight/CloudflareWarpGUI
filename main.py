@@ -30,7 +30,8 @@ visuals = {
     "red": {"buttons": {"normal": PhotoImage(file=f"{path}assets/red.png"), "highlight": PhotoImage(file=f"{path}assets/red_highlight.png")}, "colors": {"normal": "#BC232D", "highlight": "#DF2935"}},
     "colors": {"bg": "#1E1E1E"},
     "images": {"logo": {"white": PhotoImage(file=f"{path}assets/white.png"), "black": PhotoImage(file=f"{path}assets/black.png"), "orange": PhotoImage(file=f"{path}assets/orange.png")},"pfp": PhotoImage(file=f"{path}assets/pfp.png")},
-    "handburger": {"buttons": {"normal": PhotoImage(file=f"{path}assets/menuRed.png"), "highlight": PhotoImage(file=f"{path}assets/menuBlue.png")}}
+    "handburger": {"buttons": {"normal": PhotoImage(file=f"{path}assets/menuRed.png"), "highlight": PhotoImage(file=f"{path}assets/menuBlue.png")}},
+    "close": {"buttons": {"normal": PhotoImage(file=f"{path}assets/closeRed.png"), "highlight": PhotoImage(file=f"{path}assets/closeBlue.png")}}
 }
 
 root.configure(bg=visuals["colors"]["bg"])
@@ -64,8 +65,13 @@ class App:
         frame = Frame(master=master, bg=self.bg)
         frame.pack(padx=20, pady=0)
         text = "" if options else ""
+        if options is True:
+            Label(frame, bg=self.bg, foreground="white",width=30, text=text,font=("Arial", 18)).grid(row=0, column=0)
+            self.burgerLabel = self.buttonCreate(master=frame, bg=self.bg, type=visuals["close"], callback=self.handburgerCallback, text="")
+            self.burgerLabel.grid(row=0, column=1,pady=5)
+            return frame
         self.burgerLabel = self.buttonCreate(master=frame, bg=self.bg, type=visuals["handburger"], callback=self.handburgerCallback, text="")
-        self.burgerLabel.grid(row=0, column=0)
+        self.burgerLabel.grid(row=0, column=0, pady=5)
         Label(frame, bg=self.bg, foreground="white",width=27, text=text,font=("Arial", 18)).grid(row=0, column=1)
         Label(frame, bg=self.bg, foreground="white", width=60).grid(row=0, column=2)
         root.geometry(f"{str(width)}x{str(height)}")
@@ -80,9 +86,13 @@ class App:
         refresh.grid(row=2, column=1, padx=25)
         about = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.aboutCallback, text="About")
         about.grid(row=3, column=1, padx=25)
+        _exit = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=root.quit, text="Exit")
+        _exit.grid(row=4, column=1, padx=25)
+        
         Popup(root=root, text= "App settings.", bind=settings)
         Popup(root=root, text= "This will refresh the app.", bind=refresh)
         Popup(root=root, text= "About the app.", bind= about)
+        Popup(root=root, text= "Exit the app.", bind= _exit)
         return True
         
     def handburgerCallback(self):
@@ -124,8 +134,6 @@ class App:
         self.__init__(root, refresh=True)
     
     def settingsCallback(self):
-        # url = "config.json"
-        # webbrowser.open(url,new = 0, autoraise = True)
         for widget in root.winfo_children():
                 widget.destroy()
         self.handburgerMenu(root, options=True)
@@ -150,14 +158,11 @@ class App:
             activebackground=self.bg,
             highlightthickness=0,
             foreground="white",
-            # height = 200, width = 200
         )
         image.grid(row=1, column=0)
         Popup(root=root, text= "Click Me!", bind=image)
         Label(frame, text= "This app is an open source project created by DNAMcKnight hosted on Github. Click the link below to go to the download page or visit the website for more details.", justify=CENTER, wraplength=350, bg=self.bg, foreground="white").grid(row=2, column=0)
         button = Frame(master=frame, bg=self.bg)
-        
-        frame.pack()
         self.buttonCreate(master=button, bg=self.bg, type=visuals["blue"], callback=self.releaseFetch, text="Download").grid(row=0,column=0, padx=10)
         self.buttonCreate(master=button, bg=self.bg, type=visuals["blue"], callback=self.websiteFetch, text="Website").grid(row=0,column=1)
         button.grid(row=3,column=0, pady=10)
