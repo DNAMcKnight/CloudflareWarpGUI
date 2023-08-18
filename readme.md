@@ -24,6 +24,8 @@ The main focus of this program is the Tkinter version, which is built into Pytho
 
 ![Preview of main.py using built-in Tkinter](https://raw.githubusercontent.com/DNAMcKnight/CloudflareWarpGUI/main/screenshots/tkinter.png "main.py")
 
+![Preview of about section of the app](https://raw.githubusercontent.com/DNAMcKnight/CloudflareWarpGUI/main/screenshots/about.png "about")
+
 ## Windows support
 The `warp cli` can be found on windows as well which means this program should work on windows with some modifications. However there is already a GUI provided by Cloudflare, but this project aims to make it more useful for both Windows and Linux platforms over time.
 
