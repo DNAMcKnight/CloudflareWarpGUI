@@ -66,7 +66,8 @@ class App:
         frame.pack(padx=20, pady=0)
         text = "" if options else ""
         if options is True:
-            Label(frame, bg=self.bg, foreground="white",width=30, text=text,font=("Arial", 18)).grid(row=0, column=0)
+            #28 for windows 30 for linux
+            Label(frame, bg=self.bg, foreground="white",width=28, text=text,font=("Arial", 18)).grid(row=0, column=0)
             self.burgerLabel = self.buttonCreate(master=frame, bg=self.bg, type=visuals["close"], callback=self.handburgerCallback, text="")
             self.burgerLabel.grid(row=0, column=1,pady=5)
             return frame
@@ -80,14 +81,17 @@ class App:
     def handburgerScreen(self, master):
         frame = Frame(master=master, bg= self.bg)
         frame.pack()
-        settings =self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.settingsCallback, text="Settings")
-        settings.grid(row=1, column=1, padx=25)
-        refresh = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.refreshCallback, text="Refresh")
-        refresh.grid(row=2, column=1, padx=25)
-        about = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=self.aboutCallback, text="About")
-        about.grid(row=3, column=1, padx=25)
-        _exit = self.enableButton = self.buttonCreate(master=frame, bg=self.bg, type=visuals["blue"], callback=root.quit, text="Exit")
-        _exit.grid(row=4, column=1, padx=25)
+        buttons = Frame(master=frame,bg=self.bg)
+        settings =self.enableButton = self.buttonCreate(master=buttons, bg=self.bg, type=visuals["blue"], callback=self.settingsCallback, text="Settings")
+        settings.grid(row=1, column=1, padx=25, pady=1)
+        refresh = self.enableButton = self.buttonCreate(master=buttons, bg=self.bg, type=visuals["blue"], callback=self.refreshCallback, text="Refresh")
+        refresh.grid(row=2, column=1, padx=25, pady=1)
+        about = self.enableButton = self.buttonCreate(master=buttons, bg=self.bg, type=visuals["blue"], callback=self.aboutCallback, text="About")
+        about.grid(row=3, column=1, padx=25, pady=1)
+        _exit = self.enableButton = self.buttonCreate(master=buttons, bg=self.bg, type=visuals["blue"], callback=root.quit, text="Exit")
+        _exit.grid(row=4, column=1, padx=25, pady=1)
+        buttons.grid(row=2, column=1)
+        Label(frame, bg=self.bg, foreground="white", width=40).grid(row=2, column=2)
         
         Popup(root=root, text= "App settings.", bind=settings)
         Popup(root=root, text= "This will refresh the app.", bind=refresh)
@@ -172,15 +176,15 @@ class App:
         frame = Frame(master=master, bg=self.bg)
         frame.pack()
         Label(frame, text="First Time Startup Message", bg=self.bg, foreground="white", width=25).grid(row=1, column=0)
-        CustomButton(master=frame, bg=self.bg, type=visuals, key="startupMsg").button().grid(row=1, column=1, padx=25)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="startupMsg").button().grid(row=1, column=1, padx=25, pady=1)
         Label(frame, text="Windows Warning Message", bg=self.bg, foreground="white", width=25).grid(row=2, column=0)
-        CustomButton(master=frame, bg=self.bg, type=visuals, key="winWarningMsg").button().grid(row=2, column=1, padx=25)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="winWarningMsg").button().grid(row=2, column=1, padx=25, pady=1)
         Label(frame, text="Taskbar Icon on By Default", bg=self.bg, foreground="white", width=25).grid(row=3, column=0)
-        CustomButton(master=frame, bg=self.bg, type=visuals, key="defaultTaskbar").button().grid(row=3, column=1, padx=25)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="defaultTaskbar").button().grid(row=3, column=1, padx=25, pady=1)
         Label(frame, text="Auto Connect At Startup", bg=self.bg, foreground="white", width=25).grid(row=4, column=0)
-        CustomButton(master=frame, bg=self.bg, type=visuals, key="autoConnect").button().grid(row=4, column=1, padx=25)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="autoConnect").button().grid(row=4, column=1, padx=25, pady=1)
         Label(frame, text="Keep connection Alive After Closing", bg=self.bg, foreground="white", width=30).grid(row=5, column=0)
-        CustomButton(master=frame, bg=self.bg, type=visuals, key="keepAlive").button().grid(row=5, column=1, padx=25)
+        CustomButton(master=frame, bg=self.bg, type=visuals, key="keepAlive").button().grid(row=5, column=1, padx=25, pady=1)
 
     
     def profileFetch(self):
